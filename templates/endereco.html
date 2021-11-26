@@ -1,0 +1,26 @@
+<div class="container">
+  <section class="containerEndereço">
+    <H1>ENDEREÇO</H1>
+    <br>  
+    <h4>Selecione um endereço</h4>
+    {% for endereco in enderecos %}
+    <div class="enderecos">
+      <div class="seletorEndereco">
+        {% if endereco['main'] %}
+        <input type="radio" id="{{endereco['id']}}" name="endereco" checked>
+        {% else %}
+        <input type="radio" id="{{endereco['id']}}" name="endereco">
+        {% endif %}
+      </div>
+      <div class="DescEndereco">
+        <h5>MEU ENDEREÇO</h5>
+      <P>{{endereco['endereco']}},{{endereco['numero']}}, {{endereco['bairro']}} - {{endereco['estado']}}, {{endereco['complemento']}}</P>
+      </div>
+    </div>
+    {% endfor %}
+
+    <br>
+    <button class="buttonAddEndereco" onclick="addEndereco()" > <b>+ Adicionar novo endereço</b> </button>  
+    <button class="buttonAdd" onclick="confirmEndereco()" >Confirmar Endereço</button>
+  </section>
+</div>

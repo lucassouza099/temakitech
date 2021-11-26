@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block titulo %}Pedidos{% endblock %}
+{% block js %}
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+  <section class="containerPedidos">
+    <H1> <i class="far fa-file-alt fa-2x" style="color:orange"></i> Meus pedidos</H1>
+    <br>
+    <h4>Acompanhe o seu pedido atual e veja o histórico de seus pedidos aqui :</h4>
+    {% for pedidos in AllPedidos %}
+    <div class="pedido">
+      <div class="cabecalhoDetalhes">
+        <div class="produtosPedido">
+          <div class="cabecalhoPedidos">
+            <b>Pedido nº{{pedidos['id']}}</b>
+            <p>TEMAKITECH</p>
+            <p>15/11/2021 20:40</p>
+          </div>
+          <div>
+            <p> <b>Total</b> </p>
+            <p> <b>R$ {{pedidos['valor_total']}}</b> </p>
+          </div>
+          <button class="buttonStatus" onclick=""> <b> Em Aberto</b> </button>
+        </div>
+
+        <div id="{{pedidos['id']}}" class="conteudoDetalhe">
+          <div class="produtosDetalhes">
+            {% for produto in aux_produto %}
+            {% if produto['idPedido'] == pedidos['id'] %}
+            <div class="detalhesPedido">
+              <p><b>{{produto['quantidade']}}x {{produto['nome']}}</b></p>
+              <p><b>R$ {{produto['preco']}}</b> </p>
+              <p>Item</p>
+              <p></p>
+            </div>
+            <hr>
+            {% endif %}
+            {% endfor %}
+            
+            <div class="detalhesPedido">
+              <p>+ Taxa de entrega</p>
+              <p>R$ 10,00 </p>
+            
+              <p><b>Total</b></p>
+              <p> <b>R$ {{pedidos['valor_total']}}</b> </p>
+            </div>
+          </div>
+          <div class="detalhesEnderecoFpag">
+            
+            <p class="teste"> <b>Dados de Entrega</b> </p>
+            {% for endereco in enderecos %}
+            {% if pedidos['idEndereco'] == endereco['id'] %}
+            <p class="teste">{{endereco['endereco']}},{{endereco['numero']}},{{endereco['bairro']}},{{endereco['estado']}},{{endereco['complemento']}}</p>
+            <br>
+            {% endif %}
+            {% endfor %}
+            <p class="teste"> <b>Forma de Pagamento</b> </p>
+            {% for fPagamento in formaPagamentos %}
+            {% if pedidos['idFpagamento'] == fPagamento['id'] %}
+            <p class="teste">{{fPagamento['forma_pagamento']}}</p>
+            {% endif %}
+            {% endfor %}
+            
+          </div>
+        </div>
+        <div class="BottomProdutos">
+          <hr>
+          <button id="{{pedidos['id']}}" class="buttonDetalhesPedido" onclick=""> Ver detalhes do pedido </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+</section>
+</div>
+{% endblock %}

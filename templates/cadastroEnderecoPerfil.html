@@ -1,0 +1,37 @@
+<div class="close" onclick="closePopLogin()">+</div>
+<form class="formLogin" method="post" action="javascript:formEnderecoPerfil()"> 
+  <h1>Cadastro Endereco</h1> 
+  <b><p class="error" style="color:red"></p></b>
+  <b><p class="success" style="color:green"></p></b>
+  <p class="cep"> 
+    <input id="nome_login" name="cep" required="required" type="number" maxlength="10" onblur="getVal()" placeholder="CEP"/>
+  </p>
+   
+ 
+  <div class="enderecoBox">
+    <p class="endereco"> 
+      <input id="email_login" class="enderecoInput" name="endereco" required="required" type="text" placeholder="Endereco" /> 
+    </p>
+      <p class="telefoneDDD"> 
+          <input id="email_login" class="ddd" name="numero" required="required" type="number" placeholder="Nª"/> 
+      </p>
+  </div>
+
+  <div class="enderecoBox">
+    <p class="bairro"> 
+      <input id="email_login" class="bairroInput" name="bairro" required="required" type="text" placeholder="Bairro" /> 
+    </p>
+      <p class="estado"> 
+          <input id="email_login" class="estadoInput" name="estado" required="required" type="text" placeholder="Estado" /> 
+      </p>
+  </div>
+
+  <p class="complemento"> 
+      <input id="email_login" name="complemento" required="required" type="text" placeholder="Complemento" /> 
+  </p>
+  
+  <p> 
+    <input id="logar" type="submit" value="Cadastrar endereço" action="SubForm()"  /> 
+  </p>
+   
+</form>

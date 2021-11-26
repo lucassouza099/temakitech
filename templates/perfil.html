@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Endereço{% endblock %}
+{% block js %}
+
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+<section class="containerEndereço">
+
+  <form class="formLogin" method="post" action="javascript:updateUser()"> 
+    <h1>Cadastro</h1> 
+    <b><p class="error" style="color:red"></p></b>
+    <b><p class="success" style="color:green"></p></b>
+    <p style="width: 50%; display:inline-block" > 
+      <input id="nome_login" name="nome" required="required" type="text" placeholder="Nome" value="{{usuario.nome}}"/>
+    </p>
+    <p style="width: 40%; display:inline-block" > 
+      <input id="email_login" style="background-color:lightgray" name="email" required="required" type="text" placeholder="Email" value="{{usuario.username}}" disabled/> 
+    </p>
+    <div class="telefoneBox">
+        <p class="telefoneDDD"> 
+            <input id="email_login" class="ddd" name="ddd" required="required" type="number" placeholder="DDD" value="{{usuario.ddd}}" /> 
+        </p>
+        <p class="telefone"> 
+            <input id="email_login" name="telefone" required="required" type="number" placeholder="Numero" value="{{usuario.telefone}}"/> 
+        </p>
+    </div>
+
+    <p> 
+      <input id="logar" type="submit" value="Atualizar cadastro" action="SubForm()"  /> 
+    </p>
+
+  </form>
+  <!-- FORMULÁRIO SENHA  -->
+  <form class="formLogin" method="post" action="javascript:updateUserPass()"> 
+    <h1>Senha</h1> 
+    <p> 
+      <input style="width: 40%; " id="email_login" name="senhaAtual" required="senha" type="password" placeholder="Senha Atual" /> 
+  </p>
+
+    <p style="width: 40%; display:inline-block"> 
+        <input id="email_login" name="senha" required="senha" type="password" placeholder="Senha" /> 
+    </p>
+
+    <p  style="width: 40%; display:inline-block"> 
+        <input id="email_login" name="repsenha" required="required" type="password" placeholder="Repetir Senha" /> 
+      </p>
+     
+    <p> 
+      <input id="logar" type="submit" value="Alterar senha" action="SubForm()"  /> 
+    </p>
+     
+  </form>
+
+</section>
+</div>
+
+
+{% endblock %}

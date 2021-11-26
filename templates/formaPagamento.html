@@ -1,0 +1,23 @@
+<div class="container">
+  <section class="containerFormaPagamento">
+   <div class="titleCart">
+    <p> Formas de pagamento</p>
+  </div>
+    <div class="formaPagamento">
+      {% for pagamento in formaPagamento %}
+      <div class="detalhesForma">
+        <input type="radio" id="{{pagamento['id']}}" name="formaPagamento"
+         >
+         <img src="../static/bandeiras/{{pagamento['img']}}" alt="Temaki Salmão CreamChease">
+         <p>{{pagamento['forma_pagamento']}}</p>
+      </div>
+  {% endfor %}
+    </div>
+    <div class="buttonsContainer">
+      <button class="buttonVoltar" onclick="backEndereco()" > Voltar </button>
+      <button class="buttonConfirm" onclick="finalizarPedido()" >Confirmar Pedido</button>
+    </div>
+    
+    <br>
+  </section>
+</div>

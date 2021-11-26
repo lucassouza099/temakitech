@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}{% endblock %}</title>
+  <script src="https://kit.fontawesome.com/763d136b89.js" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename = 'favicon.png') }}" />
+  <link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+  <!--===============================================================================================-->
+
+  <!--===============================================================================================-->
+
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'base.css') }}" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="/static/jquery-cookie/src/jquery.cookie.js"></script>
+  <script type="text/javascript">
+    {% block js %}
+
+    {% endblock %}
+  </script>
+  <script type="text/javascript">
+
+    $(document).ready(function(){
+      $(".buttonDetalhesPedido").click(function(){
+
+      idControle = $(this)[0].id
+      strControle = "#"+idControle+".conteudoDetalhe"
+      strControleExpand = "#"+idControle+".conteudoDetalhe.expand"
+      
+      strBtn = "#"+idControle+".buttonDetalhesPedido"
+
+      controle = $(strControleExpand)
+      if (controle.length == 1){
+        descricao = $(strControleExpand)
+        descricao.removeClass('expand')
+        descricao.css('max-height','0px')
+        descricaobutton = $(strBtn)
+        descricaobutton.text("Ver detalhes do pedido")
+      }else{
+        
+        descricao = $(strControle)
+        descricao.addClass('expand')
+        descricao = $(strControleExpand)
+        descricao.css('max-height','var(--originalHeight)')
+        descricaobutton = $(strBtn)
+        descricaobutton.text("Ocultar detalhes do pedido")
+        
+      }
+      });
+
+      $(".btnTrash").click(function(){
+        idControle = $(this)[0].id
+          $.ajax({
+            url: '/deletarEndereco',
+            type: 'post',
+            data:{id:idControle},
+            success: function (data) {
+              window.location.reload();
+            }
+          });
+
+      });
+
+    });
+
+    
+    function controlDetail(){
+      
+      
+      
+       
+    }
+
+
+    function closePopLogin() {
+      document.querySelector('.bg-modal-login').style.display = "none";
+    }
+
+    function login() {
+      $.ajax({
+        url: '/login',
+        type: 'post',
+        data: { login: "login" },
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+          $('.bg-modal-login').css('display', 'block');
+          $('.bg-modal-login').css('position','fixed');
+        }
+      });
+    }
+
+    function getVal() {
+      const val = document.querySelector('input').value;
+      endpoint = 'https://viacep.com.br/ws/'+val+'/json/'
+      $.ajax({
+        url: endpoint,
+        type: 'get',
+        success: function (data) {
+          $('#email_login.enderecoInput').val(data.logradouro);
+          $('#email_login.bairroInput').val(data.bairro);
+          $('#email_login.estadoInput').val(data.localidade);
+        },
+        error: function () {
+          $('#email_login.enderecoInput').val("");
+          $('#email_login.bairroInput').val("");
+          $('#email_login.estadoInput').val("");
+          alert("CEP Inválido")
+        }
+      });
+    }
+
+    function addEndereco() {
+      $.ajax({
+        url: '/addTelaEndereco',
+        type: 'post',
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+          $('.bg-modal-login').css('position','fixed');
+          $('.bg-modal-login').css('display', 'block');
+          
+        }
+      });
+    }
+
+    function addTelaProduto() {
+      $.ajax({
+        url: '/addTelaProduto',
+        type: 'post',
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+          $('.bg-modal-login').css('display', 'block');
+          $('.bg-modal-login').css('position','fixed');
+        }
+      });
+    }
+
+    function updateUser(){
+      $.ajax({
+        url: '/updateUser',
+        type: 'post',
+        data:$('.formLogin').serialize(),
+        success: function (data) {
+          alert(data.message)
+        },
+        error: function (){
+          alert("Ocorreu erro na alteração")
+        }
+      });
+    }
+
+    function updateUserPass(){
+      $.ajax({
+        url: '/updateUserPass',
+        type: 'post',
+        data:$('.formLogin').serialize(),
+        success: function (data) {
+          alert(data.message)
+        },
+        error: function (data){
+          message = data.responseJSON
+          alert(message.message)
+          
+        }
+      });
+    }
+
+    function addEndereco() {
+      $.ajax({
+        url: '/addTelaEndereco',
+        type: 'post',
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+          $('.bg-modal-login').css('display', 'block');
+          $('.bg-modal-login').css('position','fixed');
+        }
+      });
+    }
+
+    function addEnderecoPerfil() {
+      $.ajax({
+        url: '/addTelaEnderecoPerfil',
+        type: 'post',
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+          $('.bg-modal-login').css('display', 'block');
+          $('.bg-modal-login').css('position','fixed');
+        }
+      });
+    }
+
+    function finalizarPedido() {
+      if ($('input[type=radio][name=formaPagamento]:checked').attr('id')){
+      $.ajax({
+        url: '/finalizarPedido',
+        type: 'post',
+        data: {idPagamento: $('input[type=radio][name=formaPagamento]:checked').attr('id')},
+        success: function (data) {
+          alert(data.message)
+          document.location.href="/";
+        } 
+      });  
+    }else{
+      alert("Selecione uma forma de pagamento!")
+    }
+    }
+
+    function endereco() {
+      $.ajax({
+        url: '/endereco',
+        type: 'post'
+      });
+    }
+
+    function confirmPedido() {
+      $.ajax({
+        url: '/confirmPedido',
+        type: 'post',
+        data: {login:"login"},
+        success: function (data) {
+          if(data.htmlresponse){
+            $('.modal-content-login').html(data);
+            $('.modal-content-login').append(data.htmlresponse);
+            $('.bg-modal-login').css('display', 'block');
+            $('.bg-modal-login').css('position','fixed');
+          }else{
+            
+            $('.containerCarrinho').html(data);
+            $('.containerCarrinho').append(data.htmlresponse);
+          }
+        },
+        error: function(){
+          alert("Você não possui items no carrinho")
+        }
+      });
+    }
+
+    function backEndereco() {
+      $.ajax({
+        url: '/backEndereco',
+        type: 'post',
+        success: function (data) {
+          
+    
+            $('.containerCarrinho').html(data);
+            $('.containerCarrinho').append(data.htmlresponse);
+
+        },
+        error: function(){
+          alert("Você não possui items no carrinho")
+        }
+      });
+    }
+
+    function confirmEndereco() {
+      if ($('input[type=radio][name=endereco]:checked').attr('id')){
+        $.ajax({
+          url: '/confirmEndereco',
+          type: 'post',
+          data: {id:$('input[type=radio][name=endereco]:checked').attr('id')},
+          success: function (data) {
+            if(data.htmlresponse){
+              $('.modal-content-login').html(data);
+              $('.modal-content-login').append(data.htmlresponse);
+              $('.bg-modal-login').css('display', 'block');
+              $('.bg-modal-login').css('position','fixed');
+            }else{
+              
+              $('.containerCarrinho').html(data);
+              $('.containerCarrinho').append(data.htmlresponse);
+            }
+          },
+          error: function(){
+            alert("Problemas para confirmar o endereço")
+          }
+        });
+      }else{
+        alert("Selecione ao menos 1 endereço")
+      }
+    }
+
+    function confirmEnderecoPerfil() {
+      if ($('input[type=radio][name=endereco]:checked').attr('id')){
+        $.ajax({
+          url: '/confirmEndereco',
+          type: 'post',
+          data: {id:$('input[type=radio][name=endereco]:checked').attr('id')},
+          success: function (data) {
+            alert("Endereço principal alterado!")
+          },
+          error: function(){
+            alert("Problemas para confirmar o endereço")
+          }
+        });
+      }else{
+        alert("Selecione ao menos 1 endereço")
+      }
+    }
+
+    function logout() {
+      $.ajax({
+        url: '/logout',
+        type: 'post',
+        success: function (data) {
+          document.location.href="/";
+        }
+      });
+    }
+
+    function SubForm() {
+      $.ajax({
+        url: '/logar',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function () {
+          $('.success')[0].style.fontSize="12px";
+          $('.error').hide()
+          $('.success').text("Sucesso ao logar")
+          window.location.reload();
+          
+        },
+        error: function(data){
+          data = data.responseJSON
+          $('.error')[0].style.fontSize="12px";
+          $('.error').text(data.message)
+          
+        }
+      });
+    }
+
+    function formEndereco() {
+      $.ajax({
+        url: '/cadastroEndereco',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function (data) {
+          $('.success')[0].style.fontSize="12px";
+          $('.error').hide()
+          $('.success').text("Sucesso cadastrar o endereço")
+          closePopLogin()
+          $('.containerCarrinho').html(data);
+          $('.containerCarrinho').append(data.htmlresponse);
+          
+        },
+        error: function(data){
+          data = data.responseJSON
+          $('.error')[0].style.fontSize="12px";
+          $('.error').text(data.message)
+          
+        }
+      });
+    }
+
+    function formProduto() {
+      $.ajax({
+        url: '/cadastroProduto',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function (data) {
+          $('.success')[0].style.fontSize="12px";
+          $('.error').hide()
+          $('.success').text("Sucesso cadastrar o endereço")
+          closePopLogin()
+          
+        },
+        error: function(data){
+          data = data.responseJSON
+          $('.error')[0].style.fontSize="12px";
+          $('.error').text(data.message)
+          
+        }
+      });
+    }
+
+    function formEnderecoPerfil() {
+      $.ajax({
+        url: '/cadastroEnderecoPerfil',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function (data) {
+          window.location.reload();
+          
+        },
+        error: function(data){
+          data = data.responseJSON
+          $('.error')[0].style.fontSize="12px";
+          $('.error').text(data.message)
+          
+        }
+      });
+    }
+
+    function cadUser() {
+      $.ajax({
+        url: '/cadastroUser',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function () {
+          $('.success')[0].style.fontSize="12px";
+          $('.error').hide()
+          $('.success').text("Sucesso ao cadastrar")
+          alert("Seja bem vindo(a)")
+          window.location.reload();
+          
+        },
+        error: function(data){
+          data = data.responseJSON
+          $('.error')[0].style.fontSize="12px";
+          $('.error').text(data.message)
+          
+        }
+      });
+    }
+
+    $('.formLogin').submit(function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/logar',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function () {
+          // Whatever you want to do after the form is successfully submitted
+        }
+      });
+    });
+
+    function cadastrar() {
+      $.ajax({
+        url: '/login',
+        type: 'post',
+        data: { login: "cadastro" },
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+        }
+      });
+    }
+
+
+
+
+  </script>
+</head>
+
+<body>
+  <header class="cabecalho">
+    <div class="cabecalhoItems">    
+    <a href="{{ url_for('raiz') }}"><img src="../static/favicon.png" alt=""></a>
+
+    <p class="pEndereco">Avenida Rudge, 315 Barra Funda - São Paulo / SP</p>
+    {% if request.cookies.get("login", "") %}
+    <ul id="listMenuLogin">
+      <li id="visible">
+        <button class="btnLogin" style="cursor:pointer; position:relative; margin:0px" > Olá, {{request.cookies.get("nomeUser", "")}}</button>
+        <ul class="list-categories">
+          <li><a href="{{ url_for('perfil') }}" ><i class="far fa-user-circle"></i>  Perfil</a></li>
+          <hr class="line">
+          <li><a href="{{ url_for('pedidos') }}" > <i class="far fa-file-alt"></i> Meus Pedidos</a></li>
+          <hr class="line">
+          <li><a href="{{ url_for('enderecoPerfil') }}" ><i class="fas fa-map-marker-alt"></i> Endereço</a></li>
+          <hr class="line">
+          <li><a onclick="logout()" > <i class="fas fa-sign-out-alt"></i> Logout</a></li>
+          <hr class="line">
+        </ul>
+      </li>
+    </ul>
+    
+    {% else %}
+    <button class="btnLogin" onclick="login()">Entrar</button>
+    {% endif %}
+
+    {% if carrinho %}
+    <a href="{{ url_for('cart') }}" class="alertIcon"> <i class="fas fa-circle"></i></a>
+    {% endif %}
+    <a href="{{ url_for('cart') }}" class="cart"><i class="fas fa-shopping-cart"></i></a>
+  </header>
+</div>
+  <nav>
+    <ul>
+      <a href="{{ url_for('raiz') }}">
+        <li><i class="fas fa-utensils"></i> Cardápio</li>
+      </a>
+      <a href="" onclick="userAction()">
+        <li><i class="fas fa-star"></i> Avaliações</li>
+      </a>
+      <a href="../temakitechApp/contato.html">
+        <li><i class="fas fa-phone-alt"></i> Contato</li>
+      </a>
+    </ul>
+  </nav>
+
+  <div class="bg-modal-login">
+    <div class="modal-content-login">
+      <div class="close" onclick="closePop()">+</div>
+    </div>
+  </div>
+  {% block barStatus %}
+  <section class="status">
+    <div class="status-horas">
+      <div class="icon-status">
+        <i class="fas fa-circle fa-lg"></i>
+      </div>
+
+      <div class="status-desc">
+        <p class="status-p">Fechado</p>
+        <p>Veja os horários</p>
+      </div>
+    </div>
+
+    <div class="tempo-entrega">
+      <div class="icon-tempo">
+        <i class="far fa-clock fa-2x"></i>
+      </div>
+      <div class="tempo-desc">
+        <p>Tempo de entrega</p>
+        <p>40 - 55 min</p>
+      </div>
+    </div>
+
+    <div class="forma-pgto">
+      <div class="icon-pgto">
+        <i class="fas fa-credit-card fa-2x"></i>
+      </div>
+
+      <div class="desc-pgto">
+        <p>Forma de pagamento</p>
+      </div>
+    </div>
+
+  </section>
+
+  {% endblock %}
+  {% block conteudo %}{% endblock %}
+  <footer>
+    <h5>© Temakitech - Todos os direitos reservados</h5>
+  </footer>
+</body>
+
+</html>

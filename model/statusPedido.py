@@ -1,0 +1,51 @@
+from logging import NullHandler
+from database import database
+import hashlib
+import os
+
+
+
+class StatusModel():
+
+    def __init__(self, categoria):
+        self.categoria       = categoria
+        
+        
+    #Gravar user no DB
+    def save_to_db(self):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("INSERT INTO status_pedido(status) VALUES (%s)", (self.status,))
+        connect.commit()
+        cur.close()
+
+    #Ao criar verificar se o usuário já existe
+    @classmethod
+    def get_status(self, id):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT * FROM status_pedido WHERE id=%s",(id,))
+        registro = cur.fetchone()
+        return registro
+
+    @classmethod
+    def get_categoria_all(self):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT * FROM categoria")
+        registros = cur.fetchall()
+        return registros
+        
+
+    @classmethod
+    def find_by_id(cls, id):
+        id = str(id)
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT id FROM usuario WHERE id='" + id + "'")
+        username = cur.fetchone()
+        return username

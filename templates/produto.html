@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block titulo %}Temakitech{% endblock %}
+{% block js %}
+
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+  <div class="containerProduto">
+    <h2 style="display: inline-block;">Gerenciamento de produtos</h2>
+    <button onclick="addTelaProduto()" class="btnAddProduto"><i class="fas fa-plus "></i> Add Produto </button>
+    <table style="width:100%">
+      <tr>
+        <th>Produto</th>
+        <th>descrição</th>
+        <th>Categoria</th>
+        <th>Preço</th>
+        <th>Imagem</th>
+        <th>Ações</th>
+  
+      </tr>
+      {% for produto in produtos %}
+      <tr>
+        <td>{{produto['nome']}}</td>
+        <td>{{produto['detalhe']}}</td>
+        {% for categoria in categorias %}
+        {% if produto['idCategoria'] == categoria['id'] %}
+        <td>{{categoria['categoria']}}</td>
+        {% endif %}
+        {% endfor %}
+        <td>{{produto['preco']}}</td>
+        <td><img style="max-width: 100px; height:auto" src="static/img/{{produto['img']}}" alt=""> </td>
+        <td>
+          <i style="color: orange;" class="fas fa-edit  fa-lg"></i>
+          <i style="color: red;" class="fas fa-minus-circle  fa-lg"></i>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</div>
+
+
+
+
+
+
+{% endblock %}

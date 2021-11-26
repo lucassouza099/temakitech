@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block titulo %}Temakitech{% endblock %}
+{% block js %}
+function minusProduto(action){
+  
+}
+
+$(document).ready(function(){
+
+  $(".btnRemove").click(function(){
+    $.ajax({
+      url: '/calcProduto',
+      type: 'post',
+      data: {id: $(this)[0].id,sinal:"-"
+      },
+      success: function(data){ 
+        if (data.quantidade > 0){
+          var id = "#" +data.id + ".qtdProduto"
+          $(id).text(data.quantidade);
+          var id = "#" +data.id + ".minDescPreco"
+          $(id).text(data.precoTotal.toFixed(2));
+          $(id).css('font-weight', 'bold');
+          $('#total.minDescPreco').text(data.total.toFixed(2));
+          $('#total.minDescPreco').css('font-weight', 'bold')
+        }else{
+          window.location.reload();
+        }
+        
+      },
+      error: function(data){ 
+        var response = data.responseJSON
+        alert(response.message)
+      }
+  });
+  });   
+
+  $(".btnAdd").click(function(){
+    $.ajax({
+      url: '/calcProduto',
+      type: 'post',
+      data: {id: $(this)[0].id,sinal:"+"
+      },
+      success: function(data){ 
+        if (data.quantidade > 0){
+          var id = "#" +data.id + ".qtdProduto"
+          $(id).text(data.quantidade);
+          var id = "#" +data.id + ".minDescPreco"
+          $(id).text(data.precoTotal.toFixed(2));
+          $(id).css('font-weight', 'bold');
+          $('#total.minDescPreco').text(data.total.toFixed(2));
+          $('#total.minDescPreco').css('font-weight', 'bold')
+        }else{
+          window.location.reload();
+        }
+        
+      }
+  });
+  }); 
+  
+  });
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="containerCarrinho">
+
+<section class="cartContainer">
+  <div class="titleCart">
+    <a class="cartConfirm"><i class="fas fa-shopping-cart"></i></a>
+    {% if qtdCarrinho <= 0 %} 
+    <p> Carrinho (0)</p>
+    {% else %} 
+      <p> Carrinho ({{qtdCarrinho }})</p>
+    {% endif %}
+  </div>
+
+  
+  <div class="cartBlock">
+    {% for produto in carrinho %}
+    <div class="descCart">
+      <p class="cartProdutoMain">{{produto['nome']}}</p>
+      <div class="qtdDinamic">
+        <a id="{{produto['id']}}" class="btnRemove" onclick="minusProduto()"><i class="fas fa-minus-circle"></i></a>
+        <p id="{{produto['id']}}" class="qtdProduto">{{produto['qtd']}}</p>
+        <a id="{{produto['id']}}" class="btnAdd"><i class="fas fa-plus-circle"></i></a>
+      </div>
+      <p class="minDescProduto">{{produto['nome']}}</p>
+      <div class="totalsCart">
+        <p class="minDescPreco">R$ </p>
+        <p class="minDescPreco" id="preco">{{produto['preco']}}</p>
+      </div>
+      
+      <p></p>
+      <!-- Valor total do item -->
+      <div class="totalsCart">
+        <p class="minDescPreco"> <B>R$</B> </p>
+        <p id="{{produto['id']}}" class="minDescPreco"><b>{{produto['precoTotal']}}</b></p>
+      </div>
+    </div>
+    <hr class="line">
+    {% endfor %}
+    <div class="descCart">
+      <p class="minDescProduto">Taxa de entrega</p>
+      <p class="minDescPreco">R$ 0</p>
+      <p class="minDescProduto">Total</p>
+      <div class="totalsCart">
+        <p class="minDescPreco"><b>R$</b> </p>
+        <p id="total" class="minDescPreco"> <b>{{total}}</b> </p>
+      </div>
+    </div>
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+    <form class="formulario" method="" target="dummyframe">
+      <button class="buttonAdd" onclick="confirmPedido()" >Confirmar pedido</button>
+    </form>
+  </div>
+
+
+  </div>
+
+</section>
+</div>
+
+{% endblock %}

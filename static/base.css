@@ -511,6 +511,22 @@ tr:nth-child(even) {
   position: inherit;
 }
 
+.btnAddCategoria{
+  display: block;
+  background-color: #04AA6D;
+  color: white;
+  height: 35px;
+  border: none;
+  outline: 0;
+  cursor: pointer;
+  width: 12%;
+  margin-bottom: 3px;
+  text-align: center;
+  border-radius: 10px;
+  position: inherit;
+}
+
+
 
 .descCart{
   display: grid;

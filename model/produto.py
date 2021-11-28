@@ -35,6 +35,7 @@ class ProdutoModel():
         if (registro): 
             produto = self
             produto.id = registro[0]
+            produto.categoria = registro[1]
             produto.nome = registro[2]
             produto.detalhe = registro[3]
             produto.preco = registro[4]
@@ -49,6 +50,24 @@ class ProdutoModel():
         connect = connectorDatabase.abrirConexao()
         cur = connect.cursor()
         cur.execute("SELECT * FROM produto WHERE nome=%s",(name,))
+        registro = cur.fetchone()
+        if (registro): 
+            produto = self
+            produto.id = registro[0]
+            produto.nome = registro[2]
+            produto.detalhe = registro[3]
+            produto.preco = registro[4]
+            produto.img = registro[5]
+
+            return produto
+        produto = False
+
+    @classmethod
+    def find_by_img(self,img):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT * FROM produto WHERE img=%s",(img,))
         registro = cur.fetchone()
         if (registro): 
             produto = self
@@ -100,3 +119,17 @@ class ProdutoModel():
         cur.execute("SELECT id FROM produto WHERE id='%s'",(idProduto,))
         produto = cur.fetchone()
         return produto
+    
+    @classmethod
+    def find_by_cat(self, idCategoria):
+        idProduto = int(idCategoria)
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT id FROM produto WHERE id_categoria='%s'",(idCategoria,))
+        produto = cur.fetchone()
+        if produto:
+          return produto
+        else:
+            return False
+        

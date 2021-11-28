@@ -58,7 +58,7 @@ class CategoriaMaintenance(Resource):
         else:
             return {"message": "Erro a categoria não foi encontrada!"}, 404
 
-    def delete(self, id):
+    def delete(id):
         produtoModel = CategoriaModel.find_by_id(id)
         if (produtoModel):
             try:

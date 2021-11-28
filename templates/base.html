@@ -63,7 +63,7 @@
 
       });
 
-      
+
 
       $(".btnDelProduto").click(function () {
         idControle = $(this)[0].id
@@ -78,9 +78,58 @@
             }
           });
         }
-        
-
       });
+
+      $(".btnDelCategoria").click(function () {
+        idControle = $(this)[0].id
+        if (window.confirm("Você realmente quer deletar?")) {
+          $.ajax({
+            url: '/deletarCategoria',
+            type: 'post',
+            data: { id: idControle },
+            success: function (data) {
+              alert(data.message)
+              window.location.reload();
+            },
+            error: function(data){
+              data = data.responseJSON
+              alert(data.message)
+            }
+          });
+        }
+      });
+
+      $(".btnUpdProduto").click(function () {
+        idControle = $(this)[0].id
+        $.ajax({
+          url: '/telaUpdateProduto',
+          type: 'post',
+          data: { id: idControle },
+          success: function (data) {
+            $('.modal-content-login').html(data);
+            $('.modal-content-login').append(data.htmlresponse);
+            $('.bg-modal-login').css('display', 'block');
+            $('.bg-modal-login').css('position', 'fixed');
+          }
+        });
+      });
+
+      $(".btnUpdCategoria").click(function () {
+        idControle = $(this)[0].id
+        $.ajax({
+          url: '/telaUpdateCategoria',
+          type: 'post',
+          data: { id: idControle },
+          success: function (data) {
+            $('.modal-content-login').html(data);
+            $('.modal-content-login').append(data.htmlresponse);
+            $('.bg-modal-login').css('display', 'block');
+            $('.bg-modal-login').css('position', 'fixed');
+          }
+        });
+      });
+
+      
 
     });
 
@@ -156,6 +205,19 @@
     function addTelaProduto() {
       $.ajax({
         url: '/addTelaProduto',
+        type: 'post',
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+          $('.bg-modal-login').css('display', 'block');
+          $('.bg-modal-login').css('position', 'fixed');
+        }
+      });
+    }
+
+    function addTelaCategoria() {
+      $.ajax({
+        url: '/addTelaCategoria',
         type: 'post',
         success: function (data) {
           $('.modal-content-login').html(data);
@@ -379,7 +441,6 @@
           data = data.responseJSON
           $('.error')[0].style.fontSize = "12px";
           $('.error').text(data.message)
-
         }
       });
     }
@@ -391,12 +452,81 @@
         type: 'post',
         data: form_data,
         contentType: false,
-            cache: false,
-            processData: false,
+        cache: false,
+        processData: false,
         success: function (data) {
           $('.success')[0].style.fontSize = "12px";
           $('.error').hide()
           $('.success').text("Sucesso cadastrar o produto")
+          window.location.reload();
+
+        },
+        error: function (data) {
+          data = data.responseJSON
+          $('.error')[0].style.fontSize = "12px";
+          $('.error').text(data.message)
+
+        }
+      });
+    }
+
+    function formCategoria() {
+      var form_data = new FormData($('.formLogin')[0]);
+      $.ajax({
+        url: '/cadastroCategoria',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        processData: false,
+        success: function (data) {
+          $('.success')[0].style.fontSize = "12px";
+          $('.error').hide()
+          $('.success').text("Cadastro efetuado com sucesso!")
+          window.location.reload();
+
+        },
+        error: function (data) {
+          data = data.responseJSON
+          $('.error')[0].style.fontSize = "12px";
+          $('.error').text(data.message)
+
+        }
+      });
+    }
+
+    function formUpdProduto() {
+      var form_data = new FormData($('.formLogin')[0]);
+      $.ajax({
+        url: '/alterarProduto',
+        type: 'post',
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function (data) {
+          $('.success')[0].style.fontSize = "12px";
+          $('.error').hide()
+          $('.success').text(data.message)
+          window.location.reload();
+
+        },
+        error: function (data) {
+          data = data.responseJSON
+          $('.error')[0].style.fontSize = "12px";
+          $('.error').text(data.message)
+
+        }
+      });
+    }
+
+    function formUpdCategoria() {
+      $.ajax({
+        url: '/alterarCategoria',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function (data) {
+          $('.success')[0].style.fontSize = "12px";
+          $('.error').hide()
+          $('.success').text(data.message)
           window.location.reload();
 
         },
@@ -461,7 +591,7 @@
       });
     });
 
-    function deleteProduto(){
+    function deleteProduto() {
       $.ajax({
         url: '/login',
         type: 'post',

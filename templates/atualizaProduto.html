@@ -1,0 +1,53 @@
+<div class="close" onclick="closePopLogin()">+</div>
+<!-- <iframe name="dummyframe" id="dummyframe" style="display: none;" ></iframe> -->
+<form class="formLogin" enctype=multipart/form-data method="post" action="javascript:formUpdProduto()"> 
+  <h1>Atualizar Produto</h1> 
+  <b><p class="error" style="color:red"></p></b>
+  <b><p class="success" style="color:green"></p></b>
+
+  <input type="text" name="id" value="{{ produto.id }}" style="display: none;">
+  <div class="enderecoBox">
+    <p class=""> 
+      <input id="email_login"  name="produto" required="required" type="text" placeholder="Produto" value="{{ produto.nome }}" /> 
+  </p>
+    <p class="endereco" style="margin-left:5px;"> 
+      <input id="email_login" class="enderecoInput" name="detalhe" value="{{ produto.detalhe }}" required="required" type="text" placeholder="Descrição" /> 
+    </p>
+     
+  </div>
+
+  <div class="enderecoBox">
+    <!-- <p class="bairro"> 
+      <input id="email_login" title="R$" class="bairroInput" name="categoria" required="required" type="number" placeholder="Categoria" /> 
+    </p> -->
+    <select id="cars"  name="categoria">
+      {% for categoria in categorias %}
+      {% if categoria['id'] ==  produto.categoria %}
+      <option value="{{ produto.categoria }}"> {{ categoria['categoria'] }}  </option>
+      {% endif %}
+      {% endfor %}
+      {% for categoria in categorias %}
+      {% if categoria['id'] !=  produto.categoria %}
+      <option value="{{categoria['id']}}">{{categoria['categoria']}}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+    <p> 
+      <input id="email_login" class="precoProduto" onchange="floatConvert()" value="{{ produto.preco }}" name="preco" required="required" type="text" placeholder="R$ 0.00" /> 
+  </p>
+
+  </div>
+
+  <p class="estado"> 
+    {% if produto.img %}
+    <input for="email_login" class="estadoInput" name="img" style="margin-top: 5px;" value="{{ produto.img }}" readonly />
+    {% endif %}
+    <input id="email_login" class="estadoInput" value="c:/passwords.txt"  name="file" type="file" placeholder="Imagem" /> 
+    
+  </p>
+
+<p> 
+  <input id="logar" type="submit" value="Atualizar produto" /> 
+</p>
+
+</form>

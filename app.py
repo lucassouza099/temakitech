@@ -15,6 +15,7 @@ from resources.endereco import Endereco
 from resources.auxEndereco import AuxEndereco
 from resources.auxPedido import ProdutoListPed
 from resources.auxPedido import AuxPedido
+from model.categoria import CategoriaModel
 from resources.pedido import PedidoList
 from resources.formaPagamento import FpagamentosList
 from resources.formaPagamento import Fpagamentos
@@ -54,6 +55,8 @@ api.add_resource(Status, '/pedido/status')
 # api.add_resource(Status, '/pedido')
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+# APP_ROOT = 'https://temakitechit.herokuapp.com/'
+
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static\img')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
@@ -91,8 +94,14 @@ def deletarProduto():
     getProduto = produto.get(int(id))
 
     if produtoMaintenance.delete(id):
-        os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(getProduto.img)))
-        return {"message":"Sucesso para deletar"}
+        try:
+            os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(getProduto.img)))
+            return {"message":"Sucesso para deletar"}
+        except Exception as error:
+            if produtoMaintenance.delete(id):
+                return {"message":"Sucesso para deletar"}
+        
+        
 
 
 @app.route("/logar", methods=["POST", "GET"])
@@ -127,6 +136,12 @@ def gerenciaProduto():
     listaCategorias = categoria.get()
     return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias)
 
+@app.route("/gerenciaCategoria", methods=["POST", "GET"])
+def gerenciaCategoria():
+    categoria = CategoriaList()
+    listaCategorias = categoria.get()
+    return render_template("categoria.html",categorias = listaCategorias)
+
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     res = make_response(redirect("/"))
@@ -154,6 +169,28 @@ def addTelaProduto():
     listaCategorias = categoria.get()
     return jsonify({'htmlresponse': render_template('cadastroProduto.html', categorias = listaCategorias)})
 
+#Tela de cadastro de categorias
+@app.route("/addTelaCategoria", methods=["POST", "GET"])
+def addTelaCategoria():
+    return jsonify({'htmlresponse': render_template('cadastroCategoria.html')})
+
+#Tela de cadastro de produto
+@app.route("/telaUpdateProduto", methods=["POST", "GET"])
+def telaUpdateProduto():
+    produto = Produto()
+    getProduto = produto.get(int(request.form['id']))
+    categoria = CategoriaList()
+    listaCategorias = categoria.get()
+    return jsonify({'htmlresponse': render_template('atualizaProduto.html', categorias = listaCategorias, produto = getProduto)})
+
+#Tela de atualização de categoria
+@app.route("/telaUpdateCategoria", methods=["POST", "GET"])
+def telaUpdateCategoria():
+    categoria = CategoriaModel.find_by_id(request.form['id'])
+    return jsonify({'htmlresponse': render_template('atualizaCategoria.html', categoria= categoria)})
+
+
+
 #Tela de cadastro de endereço
 @app.route("/addTelaEndereco", methods=["POST", "GET"])
 def addTelaEndereco():
@@ -163,6 +200,31 @@ def addTelaEndereco():
 def addTelaEnderecoPerfil():
     return jsonify({'htmlresponse': render_template('cadastroEnderecoPerfil.html')})
 
+@app.route("/alterarProduto", methods=["POST", "GET"])
+def alterarProduto():
+    f = request.files['file']
+    if f.filename != '':
+        if 'file' not in request.files:
+            return {"message":"No file part"},400
+
+        typeFile = f.filename.split('.')[-1]
+        if typeFile in ALLOWED_EXTENSIONS:
+          ok = 'ok'
+        else:
+            return{"message":"Arquivo inválido"},400
+        
+        #remove o antigo e salva o novo
+        try:
+            os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(request.form['img'])))
+            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+        except Exception as error:
+            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+    else:
+        f.filename = request.form['img']
+ 
+    ProdutoModel.update_produto(request.form['categoria'],request.form['produto'],request.form['detalhe'],request.form['preco'],int(request.form['id']), f.filename)
+
+    return {"Message":"Produto alterado com sucesso!"},200
 # Rotina de criação de usuário
 
 @app.route("/cadastroProduto", methods=["GET", "POST"])
@@ -180,9 +242,13 @@ def cadastroProduto():
     
     typeFile = f.filename.split('.')[-1]
     if typeFile in ALLOWED_EXTENSIONS:
-        ok = 'ok'
+        pass
     else:
         return{"message":"Arquivo inválido"},400
+    
+    if ProdutoModel.find_by_img(f.filename):
+      return{"message":"Imagem já está vinculada a um produto!"},400
+
         
         #Função para verificar se o usuário já existe no ban    co de dados
     if ProdutoModel.find_by_name(request.form['produto']):
@@ -199,6 +265,31 @@ def cadastroProduto():
     return {"message":"Sucesso ao cadastrar o produto!"},201
 
     
+@app.route("/cadastroCategoria", methods=["GET", "POST"])
+def cadastroCategoria():
+    
+    if CategoriaModel.get_categoria(request.form['categoria']):
+        return {"message":"Categoria já existente"},400
+
+    newCategoria = request.form['categoria'].upper()
+
+    categoria = CategoriaModel(newCategoria)
+    categoria.save_to_db()
+    return {"message":"Categoria criada com sucesso!"},200
+
+@app.route("/alterarCategoria", methods=["GET", "POST"])
+def alterarCategoria():
+    
+    currentCategory = CategoriaModel.get_categoria(request.form['categoria'])
+
+    if currentCategory:
+        if int(currentCategory.id) == int(request.form['id']):
+            return {"message":"Categoria existente!"},400
+    
+    newCategoria = request.form['categoria'].upper()
+
+    CategoriaModel.update_categoria(int(request.form['id']),newCategoria)
+    return {"message":"Categoria alterada com sucesso!"},200
 
 
 @app.route("/cadastroUser", methods=["POST"])
@@ -275,6 +366,19 @@ def deletarEndereco():
         return {"message":"Sucesso ao deletar"}
     except Exception as error:
         return {"message":"Erro para deletar"},404
+
+
+@app.route("/deletarCategoria", methods=["POST"])
+def deletarCategoria():
+    # Função post para registro de endereco
+    try:
+        if ProdutoModel.find_by_cat(int(request.form['id'])):
+            return {"message":"Produtos possuem esta categoria, remova o produto da categoria!"},400
+        CategoriaMaintenance.delete(int(request.form['id']))
+        
+        return {"message":"Sucesso ao deletar"},200
+    except Exception as error:
+        return {"message":"Erro para deletar"},400
 
     
 

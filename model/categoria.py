@@ -45,14 +45,18 @@ class CategoriaModel():
         
 
     @classmethod
-    def find_by_id(cls, id):
+    def find_by_id(self, id):
         id = str(id)
         connectorDatabase = database()
         connect = connectorDatabase.abrirConexao()
         cur = connect.cursor()
-        cur.execute("SELECT id FROM categoria WHERE id=%s",(int(id),))
-        username = cur.fetchone()
-        return username
+        cur.execute("SELECT * FROM categoria WHERE id=%s",(int(id),))
+        categoria = cur.fetchone()
+        if categoria:
+          cat = self
+          cat.id = categoria[0]
+          cat.nome = categoria[1]
+        return cat
 
     @classmethod
     def delete_by_id(self, id):

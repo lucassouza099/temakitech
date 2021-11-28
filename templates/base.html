@@ -22,55 +22,82 @@
   </script>
   <script type="text/javascript">
 
-    $(document).ready(function(){
-      $(".buttonDetalhesPedido").click(function(){
+    $(document).ready(function () {
+      $(".buttonDetalhesPedido").click(function () {
 
-      idControle = $(this)[0].id
-      strControle = "#"+idControle+".conteudoDetalhe"
-      strControleExpand = "#"+idControle+".conteudoDetalhe.expand"
-      
-      strBtn = "#"+idControle+".buttonDetalhesPedido"
+        idControle = $(this)[0].id
+        strControle = "#" + idControle + ".conteudoDetalhe"
+        strControleExpand = "#" + idControle + ".conteudoDetalhe.expand"
 
-      controle = $(strControleExpand)
-      if (controle.length == 1){
-        descricao = $(strControleExpand)
-        descricao.removeClass('expand')
-        descricao.css('max-height','0px')
-        descricaobutton = $(strBtn)
-        descricaobutton.text("Ver detalhes do pedido")
-      }else{
-        
-        descricao = $(strControle)
-        descricao.addClass('expand')
-        descricao = $(strControleExpand)
-        descricao.css('max-height','var(--originalHeight)')
-        descricaobutton = $(strBtn)
-        descricaobutton.text("Ocultar detalhes do pedido")
-        
-      }
+        strBtn = "#" + idControle + ".buttonDetalhesPedido"
+
+        controle = $(strControleExpand)
+        if (controle.length == 1) {
+          descricao = $(strControleExpand)
+          descricao.removeClass('expand')
+          descricao.css('max-height', '0px')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ver detalhes do pedido")
+        } else {
+
+          descricao = $(strControle)
+          descricao.addClass('expand')
+          descricao = $(strControleExpand)
+          descricao.css('max-height', 'var(--originalHeight)')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ocultar detalhes do pedido")
+
+        }
       });
 
-      $(".btnTrash").click(function(){
+      $(".btnTrash").click(function () {
         idControle = $(this)[0].id
+        $.ajax({
+          url: '/deletarEndereco',
+          type: 'post',
+          data: { id: idControle },
+          success: function (data) {
+            window.location.reload();
+          }
+        });
+
+      });
+
+      
+
+      $(".btnDelProduto").click(function () {
+        idControle = $(this)[0].id
+        if (window.confirm("Você realmente quer deletar?")) {
           $.ajax({
-            url: '/deletarEndereco',
+            url: '/deletarProduto',
             type: 'post',
-            data:{id:idControle},
+            data: { id: idControle },
             success: function (data) {
+              alert(data.message)
               window.location.reload();
             }
           });
+        }
+        
 
       });
 
     });
 
-    
-    function controlDetail(){
-      
-      
-      
-       
+
+    function controlDetail() {
+
+
+
+
+    }
+
+
+    function floatConvert() {
+
+      var num = parseFloat($(".precoProduto").val()).toFixed(2)
+      $(".precoProduto").val(num)
+
     }
 
 
@@ -87,14 +114,14 @@
           $('.modal-content-login').html(data);
           $('.modal-content-login').append(data.htmlresponse);
           $('.bg-modal-login').css('display', 'block');
-          $('.bg-modal-login').css('position','fixed');
+          $('.bg-modal-login').css('position', 'fixed');
         }
       });
     }
 
     function getVal() {
       const val = document.querySelector('input').value;
-      endpoint = 'https://viacep.com.br/ws/'+val+'/json/'
+      endpoint = 'https://viacep.com.br/ws/' + val + '/json/'
       $.ajax({
         url: endpoint,
         type: 'get',
@@ -119,9 +146,9 @@
         success: function (data) {
           $('.modal-content-login').html(data);
           $('.modal-content-login').append(data.htmlresponse);
-          $('.bg-modal-login').css('position','fixed');
+          $('.bg-modal-login').css('position', 'fixed');
           $('.bg-modal-login').css('display', 'block');
-          
+
         }
       });
     }
@@ -134,37 +161,37 @@
           $('.modal-content-login').html(data);
           $('.modal-content-login').append(data.htmlresponse);
           $('.bg-modal-login').css('display', 'block');
-          $('.bg-modal-login').css('position','fixed');
+          $('.bg-modal-login').css('position', 'fixed');
         }
       });
     }
 
-    function updateUser(){
+    function updateUser() {
       $.ajax({
         url: '/updateUser',
         type: 'post',
-        data:$('.formLogin').serialize(),
+        data: $('.formLogin').serialize(),
         success: function (data) {
           alert(data.message)
         },
-        error: function (){
+        error: function () {
           alert("Ocorreu erro na alteração")
         }
       });
     }
 
-    function updateUserPass(){
+    function updateUserPass() {
       $.ajax({
         url: '/updateUserPass',
         type: 'post',
-        data:$('.formLogin').serialize(),
+        data: $('.formLogin').serialize(),
         success: function (data) {
           alert(data.message)
         },
-        error: function (data){
+        error: function (data) {
           message = data.responseJSON
           alert(message.message)
-          
+
         }
       });
     }
@@ -177,7 +204,7 @@
           $('.modal-content-login').html(data);
           $('.modal-content-login').append(data.htmlresponse);
           $('.bg-modal-login').css('display', 'block');
-          $('.bg-modal-login').css('position','fixed');
+          $('.bg-modal-login').css('position', 'fixed');
         }
       });
     }
@@ -190,25 +217,25 @@
           $('.modal-content-login').html(data);
           $('.modal-content-login').append(data.htmlresponse);
           $('.bg-modal-login').css('display', 'block');
-          $('.bg-modal-login').css('position','fixed');
+          $('.bg-modal-login').css('position', 'fixed');
         }
       });
     }
 
     function finalizarPedido() {
-      if ($('input[type=radio][name=formaPagamento]:checked').attr('id')){
-      $.ajax({
-        url: '/finalizarPedido',
-        type: 'post',
-        data: {idPagamento: $('input[type=radio][name=formaPagamento]:checked').attr('id')},
-        success: function (data) {
-          alert(data.message)
-          document.location.href="/";
-        } 
-      });  
-    }else{
-      alert("Selecione uma forma de pagamento!")
-    }
+      if ($('input[type=radio][name=formaPagamento]:checked').attr('id')) {
+        $.ajax({
+          url: '/finalizarPedido',
+          type: 'post',
+          data: { idPagamento: $('input[type=radio][name=formaPagamento]:checked').attr('id') },
+          success: function (data) {
+            alert(data.message)
+            document.location.href = "/";
+          }
+        });
+      } else {
+        alert("Selecione uma forma de pagamento!")
+      }
     }
 
     function endereco() {
@@ -222,20 +249,20 @@
       $.ajax({
         url: '/confirmPedido',
         type: 'post',
-        data: {login:"login"},
+        data: { login: "login" },
         success: function (data) {
-          if(data.htmlresponse){
+          if (data.htmlresponse) {
             $('.modal-content-login').html(data);
             $('.modal-content-login').append(data.htmlresponse);
             $('.bg-modal-login').css('display', 'block');
-            $('.bg-modal-login').css('position','fixed');
-          }else{
-            
+            $('.bg-modal-login').css('position', 'fixed');
+          } else {
+
             $('.containerCarrinho').html(data);
             $('.containerCarrinho').append(data.htmlresponse);
           }
         },
-        error: function(){
+        error: function () {
           alert("Você não possui items no carrinho")
         }
       });
@@ -246,59 +273,59 @@
         url: '/backEndereco',
         type: 'post',
         success: function (data) {
-          
-    
-            $('.containerCarrinho').html(data);
-            $('.containerCarrinho').append(data.htmlresponse);
+
+
+          $('.containerCarrinho').html(data);
+          $('.containerCarrinho').append(data.htmlresponse);
 
         },
-        error: function(){
+        error: function () {
           alert("Você não possui items no carrinho")
         }
       });
     }
 
     function confirmEndereco() {
-      if ($('input[type=radio][name=endereco]:checked').attr('id')){
+      if ($('input[type=radio][name=endereco]:checked').attr('id')) {
         $.ajax({
           url: '/confirmEndereco',
           type: 'post',
-          data: {id:$('input[type=radio][name=endereco]:checked').attr('id')},
+          data: { id: $('input[type=radio][name=endereco]:checked').attr('id') },
           success: function (data) {
-            if(data.htmlresponse){
+            if (data.htmlresponse) {
               $('.modal-content-login').html(data);
               $('.modal-content-login').append(data.htmlresponse);
               $('.bg-modal-login').css('display', 'block');
-              $('.bg-modal-login').css('position','fixed');
-            }else{
-              
+              $('.bg-modal-login').css('position', 'fixed');
+            } else {
+
               $('.containerCarrinho').html(data);
               $('.containerCarrinho').append(data.htmlresponse);
             }
           },
-          error: function(){
+          error: function () {
             alert("Problemas para confirmar o endereço")
           }
         });
-      }else{
+      } else {
         alert("Selecione ao menos 1 endereço")
       }
     }
 
     function confirmEnderecoPerfil() {
-      if ($('input[type=radio][name=endereco]:checked').attr('id')){
+      if ($('input[type=radio][name=endereco]:checked').attr('id')) {
         $.ajax({
           url: '/confirmEndereco',
           type: 'post',
-          data: {id:$('input[type=radio][name=endereco]:checked').attr('id')},
+          data: { id: $('input[type=radio][name=endereco]:checked').attr('id') },
           success: function (data) {
             alert("Endereço principal alterado!")
           },
-          error: function(){
+          error: function () {
             alert("Problemas para confirmar o endereço")
           }
         });
-      }else{
+      } else {
         alert("Selecione ao menos 1 endereço")
       }
     }
@@ -308,7 +335,7 @@
         url: '/logout',
         type: 'post',
         success: function (data) {
-          document.location.href="/";
+          document.location.href = "/";
         }
       });
     }
@@ -319,17 +346,17 @@
         type: 'post',
         data: $('.formLogin').serialize(),
         success: function () {
-          $('.success')[0].style.fontSize="12px";
+          $('.success')[0].style.fontSize = "12px";
           $('.error').hide()
           $('.success').text("Sucesso ao logar")
           window.location.reload();
-          
+
         },
-        error: function(data){
+        error: function (data) {
           data = data.responseJSON
-          $('.error')[0].style.fontSize="12px";
+          $('.error')[0].style.fontSize = "12px";
           $('.error').text(data.message)
-          
+
         }
       });
     }
@@ -340,40 +367,44 @@
         type: 'post',
         data: $('.formLogin').serialize(),
         success: function (data) {
-          $('.success')[0].style.fontSize="12px";
+          $('.success')[0].style.fontSize = "12px";
           $('.error').hide()
           $('.success').text("Sucesso cadastrar o endereço")
           closePopLogin()
           $('.containerCarrinho').html(data);
           $('.containerCarrinho').append(data.htmlresponse);
-          
+
         },
-        error: function(data){
+        error: function (data) {
           data = data.responseJSON
-          $('.error')[0].style.fontSize="12px";
+          $('.error')[0].style.fontSize = "12px";
           $('.error').text(data.message)
-          
+
         }
       });
     }
 
     function formProduto() {
+      var form_data = new FormData($('.formLogin')[0]);
       $.ajax({
         url: '/cadastroProduto',
         type: 'post',
-        data: $('.formLogin').serialize(),
+        data: form_data,
+        contentType: false,
+            cache: false,
+            processData: false,
         success: function (data) {
-          $('.success')[0].style.fontSize="12px";
+          $('.success')[0].style.fontSize = "12px";
           $('.error').hide()
-          $('.success').text("Sucesso cadastrar o endereço")
-          closePopLogin()
-          
+          $('.success').text("Sucesso cadastrar o produto")
+          window.location.reload();
+
         },
-        error: function(data){
+        error: function (data) {
           data = data.responseJSON
-          $('.error')[0].style.fontSize="12px";
+          $('.error')[0].style.fontSize = "12px";
           $('.error').text(data.message)
-          
+
         }
       });
     }
@@ -385,13 +416,13 @@
         data: $('.formLogin').serialize(),
         success: function (data) {
           window.location.reload();
-          
+
         },
-        error: function(data){
+        error: function (data) {
           data = data.responseJSON
-          $('.error')[0].style.fontSize="12px";
+          $('.error')[0].style.fontSize = "12px";
           $('.error').text(data.message)
-          
+
         }
       });
     }
@@ -402,18 +433,18 @@
         type: 'post',
         data: $('.formLogin').serialize(),
         success: function () {
-          $('.success')[0].style.fontSize="12px";
+          $('.success')[0].style.fontSize = "12px";
           $('.error').hide()
           $('.success').text("Sucesso ao cadastrar")
           alert("Seja bem vindo(a)")
           window.location.reload();
-          
+
         },
-        error: function(data){
+        error: function (data) {
           data = data.responseJSON
-          $('.error')[0].style.fontSize="12px";
+          $('.error')[0].style.fontSize = "12px";
           $('.error').text(data.message)
-          
+
         }
       });
     }
@@ -429,6 +460,18 @@
         }
       });
     });
+
+    function deleteProduto(){
+      $.ajax({
+        url: '/login',
+        type: 'post',
+        data: { login: "cadastro" },
+        success: function (data) {
+          $('.modal-content-login').html(data);
+          $('.modal-content-login').append(data.htmlresponse);
+        }
+      });
+    }
 
     function cadastrar() {
       $.ajax({
@@ -450,37 +493,38 @@
 
 <body>
   <header class="cabecalho">
-    <div class="cabecalhoItems">    
-    <a href="{{ url_for('raiz') }}"><img src="../static/favicon.png" alt=""></a>
+    <div class="cabecalhoItems">
+      <a href="{{ url_for('raiz') }}"><img src="../static/favicon.png" alt=""></a>
 
-    <p class="pEndereco">Avenida Rudge, 315 Barra Funda - São Paulo / SP</p>
-    {% if request.cookies.get("login", "") %}
-    <ul id="listMenuLogin">
-      <li id="visible">
-        <button class="btnLogin" style="cursor:pointer; position:relative; margin:0px" > Olá, {{request.cookies.get("nomeUser", "")}}</button>
-        <ul class="list-categories">
-          <li><a href="{{ url_for('perfil') }}" ><i class="far fa-user-circle"></i>  Perfil</a></li>
-          <hr class="line">
-          <li><a href="{{ url_for('pedidos') }}" > <i class="far fa-file-alt"></i> Meus Pedidos</a></li>
-          <hr class="line">
-          <li><a href="{{ url_for('enderecoPerfil') }}" ><i class="fas fa-map-marker-alt"></i> Endereço</a></li>
-          <hr class="line">
-          <li><a onclick="logout()" > <i class="fas fa-sign-out-alt"></i> Logout</a></li>
-          <hr class="line">
-        </ul>
-      </li>
-    </ul>
-    
-    {% else %}
-    <button class="btnLogin" onclick="login()">Entrar</button>
-    {% endif %}
+      <p class="pEndereco">Avenida Rudge, 315 Barra Funda - São Paulo / SP</p>
+      {% if request.cookies.get("login", "") %}
+      <ul id="listMenuLogin">
+        <li id="visible">
+          <button class="btnLogin" style="cursor:pointer; position:relative; margin:0px"> Olá,
+            {{request.cookies.get("nomeUser", "")}}</button>
+          <ul class="list-categories">
+            <li><a href="{{ url_for('perfil') }}"><i class="far fa-user-circle"></i> Perfil</a></li>
+            <hr class="line">
+            <li><a href="{{ url_for('pedidos') }}"> <i class="far fa-file-alt"></i> Meus Pedidos</a></li>
+            <hr class="line">
+            <li><a href="{{ url_for('enderecoPerfil') }}"><i class="fas fa-map-marker-alt"></i> Endereço</a></li>
+            <hr class="line">
+            <li><a onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <hr class="line">
+          </ul>
+        </li>
+      </ul>
 
-    {% if carrinho %}
-    <a href="{{ url_for('cart') }}" class="alertIcon"> <i class="fas fa-circle"></i></a>
-    {% endif %}
-    <a href="{{ url_for('cart') }}" class="cart"><i class="fas fa-shopping-cart"></i></a>
+      {% else %}
+      <button class="btnLogin" onclick="login()">Entrar</button>
+      {% endif %}
+
+      {% if carrinho %}
+      <a href="{{ url_for('cart') }}" class="alertIcon"> <i class="fas fa-circle"></i></a>
+      {% endif %}
+      <a href="{{ url_for('cart') }}" class="cart"><i class="fas fa-shopping-cart"></i></a>
   </header>
-</div>
+  </div>
   <nav>
     <ul>
       <a href="{{ url_for('raiz') }}">

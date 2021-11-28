@@ -41,7 +41,25 @@ class ProdutoModel():
             produto.img = registro[5]
 
             return produto
-        categoria = False
+        produto = False
+    
+    @classmethod
+    def find_by_name(self, name):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT * FROM produto WHERE nome=%s",(name,))
+        registro = cur.fetchone()
+        if (registro): 
+            produto = self
+            produto.id = registro[0]
+            produto.nome = registro[2]
+            produto.detalhe = registro[3]
+            produto.preco = registro[4]
+            produto.img = registro[5]
+
+            return produto
+        produto = False
 
     @classmethod
     def get_produto_all(self):

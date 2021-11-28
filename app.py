@@ -9,6 +9,7 @@ from resources.categoria import Categoria
 from resources.statusPedido import Status
 from resources.produto import Produto, ProdutoList
 from resources.produto import ProdutoMaintenance
+from model.produto import ProdutoModel
 from resources.endereco import EnderecoList
 from resources.endereco import Endereco
 from resources.auxEndereco import AuxEndereco
@@ -54,7 +55,7 @@ api.add_resource(Status, '/pedido/status')
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static\img')
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 @app.route("/")
 def raiz():
@@ -76,7 +77,22 @@ def raiz():
     except Exception as error:
         ValorTotal
 
+    
+
     return render_template("index.html", produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal)
+
+
+@app.route("/deletarProduto", methods=["POST", "GET"])
+def deletarProduto():
+    id = request.form['id']
+    produtoMaintenance = ProdutoMaintenance()
+
+    produto = Produto()
+    getProduto = produto.get(int(id))
+
+    if produtoMaintenance.delete(id):
+        os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(getProduto.img)))
+        return {"message":"Sucesso para deletar"}
 
 
 @app.route("/logar", methods=["POST", "GET"])
@@ -94,8 +110,7 @@ def logar():
         res = make_response(redirect("/"))
         nome = logado.nome
         nome= nome.split(' ')
-        
-
+    
         res.set_cookie("nomeUser", nome[0], samesite="Strict")
         res.set_cookie("id", str(logado.id), samesite="Strict")
         res.set_cookie("login", login, samesite="Strict")
@@ -135,7 +150,9 @@ def login():
 #Tela de cadastro de produto
 @app.route("/addTelaProduto", methods=["POST", "GET"])
 def addTelaProduto():
-    return jsonify({'htmlresponse': render_template('cadastroProduto.html')})
+    categoria = CategoriaList()
+    listaCategorias = categoria.get()
+    return jsonify({'htmlresponse': render_template('cadastroProduto.html', categorias = listaCategorias)})
 
 #Tela de cadastro de endereço
 @app.route("/addTelaEndereco", methods=["POST", "GET"])
@@ -148,25 +165,41 @@ def addTelaEnderecoPerfil():
 
 # Rotina de criação de usuário
 
-@app.route("/cadastroProduto", methods=["POST"])
+@app.route("/cadastroProduto", methods=["GET", "POST"])
 def cadastroProduto():
-    f = request.files['file']
-    f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-    return 'file uploaded successfully'
-# check if the post request has the file part
-    if 'file' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['file']
 
-        # if user does not select file, browser also
-        # submit a empty part without filename
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save('favicon.png')  
+    if request.form['categoria'] == '':
+            return {"message":"Selecione ao menos uma categoria"},400
+    
+    f = request.files['file']
+    if 'file' not in request.files:
+        return {"message":"No file part"},400
+        
+    if f.filename == '':
+        return {"message":"No selected file"},400
+    
+    typeFile = f.filename.split('.')[-1]
+    if typeFile in ALLOWED_EXTENSIONS:
+        ok = 'ok'
+    else:
+        return{"message":"Arquivo inválido"},400
+        
+        #Função para verificar se o usuário já existe no ban    co de dados
+    if ProdutoModel.find_by_name(request.form['produto']):
+            #caso não existir retorno a mensagem abaixo
+        return {"message":"Essa categoria já existe no sistema!"}, 400
+        #chamando a classe para gravar o usuário no banco de dados
+    categoria = ProdutoModel(request.form['categoria'],request.form['produto'],request.form['detalhe'], request.form['preco'],f.filename)
+    categoria.save_to_db()
+
+    if f and allowed_file(f.filename):
+        f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+        
+
+    return {"message":"Sucesso ao cadastrar o produto!"},201
+
+    
+
 
 @app.route("/cadastroUser", methods=["POST"])
 def cadastroUser():
@@ -238,6 +271,7 @@ def deletarEndereco():
     # Função post para registro de endereco
     try:
         Endereco.delete(int(request.form['id']))
+        
         return {"message":"Sucesso ao deletar"}
     except Exception as error:
         return {"message":"Erro para deletar"},404

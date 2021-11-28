@@ -904,6 +904,21 @@ footer {
   width: auto;
   display: inline-block;
 }
+
+
+select{
+  margin-top: 20px;
+  margin-right: 5px;
+  width: 100%;
+  padding-left: 2px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+
 input[type=text],
 input[type=email],
 input[type=password],
@@ -961,6 +976,10 @@ input[type=submit]{
 
 .telefoneDDD{
   display: contents;
+}
+
+.btnDelProduto{
+  cursor: pointer;
 }
 
 #email_login.ddd{

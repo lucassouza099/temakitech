@@ -56,8 +56,11 @@
             
             <div class="detalhesPedido">
               <p>+ Taxa de entrega</p>
-              <p>R$ 10,00 </p>
-            
+              {% if pedidos['taxaEntrega']%}
+              <p>R$  {{pedidos['taxaEntrega']}} </p>
+              {% else %}
+              <p>R$ 0.00</p>
+              {% endif %}
               <p><b>Total</b></p>
               <p> <b>R$ {{pedidos['valorTotal']}}</b> </p>
             </div>

@@ -521,6 +521,25 @@
       });
     }
 
+    function alterarConfiguracao() {
+      $.ajax({
+        url: '/alterarConfiguracoes',
+        type: 'post',
+        data: $('.formLogin').serialize(),
+        success: function (data) {
+          alert(data.message)
+          window.location.reload();
+
+        },
+        error: function (data) {
+          data = data.responseJSON
+          $('.error')[0].style.fontSize = "12px";
+          $('.error').text(data.message)
+
+        }
+      });
+    }
+
     function formEndereco() {
       $.ajax({
         url: '/cadastroEndereco',
@@ -782,7 +801,7 @@
       <a href="" onclick="userAction()">
         <li><i class="fas fa-star"></i> Avaliações</li>
       </a>
-      <a href="../temakitechApp/contato.html">
+      <a href="{{ url_for('contato') }}">
         <li><i class="fas fa-phone-alt"></i> Contato</li>
       </a>
     </ul>
@@ -796,14 +815,25 @@
   {% block barStatus %}
   <section class="status">
     <div class="status-horas">
+      {% if session['atividade'] == 0 %}
       <div class="icon-status">
         <i class="fas fa-circle fa-lg"></i>
       </div>
-
+      
       <div class="status-desc">
         <p class="status-p">Fechado</p>
         <p>Veja os horários</p>
       </div>
+      {% else %}
+      <div class="icon-status" style="color: green;">
+        <i class="fas fa-circle fa-lg"></i>
+      </div>
+      
+      <div class="status-desc">
+        <p class="status-p">Aberto</p>
+        <p>Veja os horários</p>
+      </div>
+      {% endif %}
     </div>
 
     <div class="tempo-entrega">
@@ -812,7 +842,7 @@
       </div>
       <div class="tempo-desc">
         <p>Tempo de entrega</p>
-        <p>40 - 55 min</p>
+        <p>{{config.tempoEntrega}}</p>
       </div>
     </div>
 

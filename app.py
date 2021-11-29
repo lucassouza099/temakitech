@@ -1,4 +1,4 @@
-from flask import Flask, flash, session, url_for, make_response, request, render_template, redirect, send_from_directory, jsonify
+from flask import Flask, config, flash, session, url_for, make_response, request, render_template, redirect, send_from_directory, jsonify
 from flask.wrappers import Request
 from flask_restful import Api
 from flask_jwt import JWT
@@ -11,6 +11,7 @@ from resources.statusPedido import Status
 from resources.produto import Produto, ProdutoList
 from resources.produto import ProdutoMaintenance
 from model.produto import ProdutoModel
+from model.configuracao import configModal
 from resources.endereco import EnderecoList
 from resources.endereco import Endereco
 from resources.auxEndereco import AuxEndereco
@@ -29,10 +30,12 @@ from model.auxPedido import AuxprodModal
 from model.auxEndereco import AuxenderecoModal
 from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
+from pytz import timezone
 import os
 import werkzeug
 import json
 import simplejson
+import datetime
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -61,12 +64,21 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static\img')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
+#Regras
+def time_in_range(start, end, current):
+    """Returns whether current is in the range [start, end]"""
+    return start <= current <= end
+
+
+
+
 @app.route("/")
 def raiz():
     produto = ProdutoList()
     categoria = CategoriaList()
     listaProdutos = produto.get()
     listaCategorias = categoria.get()
+    
     try:
         carrinho = session['cart']
     except Exception as error:
@@ -81,9 +93,23 @@ def raiz():
     except Exception as error:
         ValorTotal
 
-    
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES-------------------    
 
-    return render_template("index.html", produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal)
+    return render_template("index.html", produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal, config = configuracao)
 
 
 @app.route("/deletarProduto", methods=["POST", "GET"])
@@ -135,17 +161,93 @@ def gerenciaProduto():
     categoria = CategoriaList()
     listaProdutos = produto.get()
     listaCategorias = categoria.get()
-    return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias)
+
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES------------------- 
+
+    return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias, config=configuracao)
 
 @app.route("/configuracoesGerais", methods=["POST", "GET"])
 def configuracoesGerais():
-    return render_template("configuracoesGerais.html")    
+    try:
+        carrinho = session['cart']
+    except Exception as error:
+        carrinho = []
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES-------------------   
+    return render_template("configuracoesGerais.html", carrinho = carrinho, config = configuracao)    
 
 @app.route("/gerenciaCategoria", methods=["POST", "GET"])
 def gerenciaCategoria():
     categoria = CategoriaList()
     listaCategorias = categoria.get()
-    return render_template("categoria.html",categorias = listaCategorias)
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES------------------- 
+    return render_template("categoria.html",categorias = listaCategorias, config = configuracao )
+
+@app.route("/contato", methods=["POST", "GET"])
+def contato():
+
+     #-------------------Cookie Carrinho
+     try:
+         carrinho = session['cart']
+     except Exception as error:
+         carrinho = []
+      #------------------CONFIGURAÇÕES-------------------
+     configuracao = configModal.get_config()
+     south_africa = timezone('Brazil/East')
+     horaInicio = int(configuracao.horaInicio[0:2])
+     minutoInicio = int(configuracao.horaInicio[3:5])
+     horaFim = int(configuracao.horaFim[0:2])
+     minutoFim = int(configuracao.horaFim[3:5])
+     start = datetime.time(horaInicio, minutoInicio, 0)
+     end = datetime.time(horaFim, minutoFim, 0)
+     current = datetime.datetime.now(south_africa).time()
+     if(time_in_range(start, end, current)):
+         session['atividade'] = 1
+     else:
+         session['atividade'] = 0
+     #----------------FIM-CONFIGURAÇÕES------------------- 
+     return render_template("contato.html", config = configuracao )
 
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
@@ -396,6 +498,9 @@ def backEndereco():
 def confirmPedido():
     if session['cart'] == []:
         return {'message': 'Não existe produtos no carrinho'}, 400
+    
+    if session['atividade'] == 0:
+        return {"message":"A temakeria está fechada"},400
 
     if request.cookies.get("login", ""):
         return redirect('/endereco')
@@ -419,13 +524,28 @@ def perfil():
             carrinho = session['cart']
         except Exception as error:
             carrinho = []
-            
 
+       
         user = UserModel.find_by_username(request.cookies.get("login", ""))
+        #------------------CONFIGURAÇÕES-------------------
+        configuracao = configModal.get_config()
+        south_africa = timezone('Brazil/East')
+        horaInicio = int(configuracao.horaInicio[0:2])
+        minutoInicio = int(configuracao.horaInicio[3:5])
+        horaFim = int(configuracao.horaFim[0:2])
+        minutoFim = int(configuracao.horaFim[3:5])
+        start = datetime.time(horaInicio, minutoInicio, 0)
+        end = datetime.time(horaFim, minutoFim, 0)
+        current = datetime.datetime.now(south_africa).time()
+        if(time_in_range(start, end, current)):
+            session['atividade'] = 1
+        else:
+            session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES-------------------   
         # enderecos = EnderecoList()
         # # listaEndereco = endereco.get_enderecos_user(request.cookies.get("login", ""))
         # listaEndereco = enderecos.get(int(request.cookies.get("id", "")))
-        return render_template("perfil.html",carrinho=carrinho, usuario = user)    
+        return render_template("perfil.html",carrinho=carrinho, usuario = user, config = configuracao)    
 
 @app.route("/endereco",  methods=["POST","GET"])
 def endereco():
@@ -445,7 +565,24 @@ def enderecoPerfil():
         enderecos = EnderecoList()
         # listaEndereco = endereco.get_enderecos_user(request.cookies.get("login", ""))
         listaEndereco = enderecos.get(int(request.cookies.get("id", "")))
-        return render_template("enderecoPerfil.html",carrinho=carrinho, enderecos = listaEndereco)
+
+        #------------------CONFIGURAÇÕES-------------------
+        configuracao = configModal.get_config()
+        south_africa = timezone('Brazil/East')
+        horaInicio = int(configuracao.horaInicio[0:2])
+        minutoInicio = int(configuracao.horaInicio[3:5])
+        horaFim = int(configuracao.horaFim[0:2])
+        minutoFim = int(configuracao.horaFim[3:5])
+        start = datetime.time(horaInicio, minutoInicio, 0)
+        end = datetime.time(horaFim, minutoFim, 0)
+        current = datetime.datetime.now(south_africa).time()
+        if(time_in_range(start, end, current)):
+            session['atividade'] = 1
+        else:
+            session['atividade'] = 0
+        #----------------FIM-CONFIGURAÇÕES-------------------   
+
+        return render_template("enderecoPerfil.html",carrinho=carrinho, enderecos = listaEndereco, config = configuracao)
 
 
 @app.route("/confirmProduto", methods=["POST", "GET"])
@@ -459,6 +596,22 @@ def confirmProduto():
 
 @app.route("/cart", methods=["POST", "GET"])
 def cart():
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES-------------------   
+
     # name = request.cookies.get('name')
     try:
         produtos = session['cart']
@@ -467,11 +620,13 @@ def cart():
         ValorTotal = float(ValorTotal)
         for x in produtos:
             ValorTotal = ValorTotal + float(x['precoTotal'])
-        session['valorTotal'] = ValorTotal
-        return render_template("cart.html", carrinho=produtos, qtdCarrinho=qtdTotal, total=ValorTotal)
+        
+        ValorTotal += float(configuracao.taxaEntrega)
+        session['valorTotal'] = float(ValorTotal) 
+        return render_template("cart.html", carrinho=produtos, qtdCarrinho=qtdTotal, total= float(ValorTotal), config = configuracao)
 
     except Exception as error:
-        return render_template("cart.html", carrinho='', qtdCarrinho=0, total=0)
+        return render_template("cart.html", carrinho='', qtdCarrinho=0, total=0,config = configuracao)
     # teste = simplejson.loads(str(name))
     # return render_template("cart.html")
 
@@ -483,6 +638,9 @@ def addCart():
         session['cart'] = []  #
     cart_list = session['cart']
 
+    if session['atividade'] == 0:
+        return {"message":"A temakeria está fechada"},400
+
     count = 0
     for x in cart_list:
         count = count + 1
@@ -490,7 +648,7 @@ def addCart():
             return {'message': 'Este produto já foi adicionado ao carrinho'}, 400
 
     cart_list.append({"id": request.form['id'], "nome": request.form['nome'],
-                     "qtd": request.form['qtd'], "preco": request.form['preco'], "precoTotal": request.form['precoTotal'], "obs": request.form['obs']})
+                     "qtd": request.form['qtd'], "preco": request.form['preco'], "precoTotal": request.form['precoTotal']  , "obs": request.form['obs']})
     session['cart'] = cart_list  #
     return session
 
@@ -560,6 +718,8 @@ def calcProduto():
 
 @app.route("/finalizarPedido", methods=["POST", "GET"])
 def finalizarPedido():
+    #Configurações iniciais
+    configuracao = configModal.get_config()
     #Verificação dos IDS
     totalPedidos = PedidoModal.countPedidos()
     idPedido = int(1000 + totalPedidos[0])
@@ -578,7 +738,7 @@ def finalizarPedido():
     idFormaPagamento = int(request.form['idPagamento'])
     valorTotal = session['valorTotal']
     #Finalizando o pedido
-    pedido= PedidoModal(idPedido,int(request.cookies.get("id", "")),idEndereco,idStatus,idFormaPagamento,valorTotal,None,None)
+    pedido= PedidoModal(idPedido,int(request.cookies.get("id", "")),idEndereco,idStatus,idFormaPagamento,valorTotal,None,None,configuracao.taxaEntrega)
     pedido.save_to_db()
     idPedido = str(idPedido)
     session['valorTotal'] = 0
@@ -596,8 +756,45 @@ def pedidos():
     pedidos = regPedido.getUser(request.cookies.get("id", ""))
     newlist = sorted(pedidos, key=lambda d: d['id'], reverse=True) 
 
-    return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0 )
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES------------------- 
+
+    return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0, config = configuracao )
     # return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
+
+@app.route("/alterarConfiguracoes", methods=["POST", "GET"])
+def alterarConfiguracoes():
+    if configModal.update_config(request.form['horaInicio'],request.form['horaFim'],request.form['taxaEntrega'],request.form['tempoEntrega']):
+        #------------------CONFIGURAÇÕES-------------------
+        configuracao = configModal.get_config()
+        south_africa = timezone('Brazil/East')
+        horaInicio = int(request.form['horaInicio'][0:2])
+        minutoInicio = int(request.form['horaInicio'][3:5])
+        horaFim = int(request.form['horaFim'][0:2])
+        minutoFim = int(request.form['horaFim'][3:5])
+        start = datetime.time(horaInicio, minutoInicio, 0)
+        end = datetime.time(horaFim, minutoFim, 0)
+        current = datetime.datetime.now(south_africa).time()
+        if(time_in_range(start, end, current)):
+            session['atividade'] = 1
+        else:
+            session['atividade'] = 0
+        #----------------FIM-CONFIGURAÇÕES------------------- 
+
+        return {"message":"Sucesso ao alterar as configurações"},200
 
 @app.route("/gerenciaPedidos", methods=["POST", "GET"])
 def gerenciaPedidos():
@@ -616,8 +813,24 @@ def gerenciaPedidos():
     
     
     newlist = sorted(pedidos, key=lambda d: d['id'], reverse=True) 
+    
+    #------------------CONFIGURAÇÕES-------------------
+    configuracao = configModal.get_config()
+    south_africa = timezone('Brazil/East')
+    horaInicio = int(configuracao.horaInicio[0:2])
+    minutoInicio = int(configuracao.horaInicio[3:5])
+    horaFim = int(configuracao.horaFim[0:2])
+    minutoFim = int(configuracao.horaFim[3:5])
+    start = datetime.time(horaInicio, minutoInicio, 0)
+    end = datetime.time(horaFim, minutoFim, 0)
+    current = datetime.datetime.now(south_africa).time()
+    if(time_in_range(start, end, current)):
+        session['atividade'] = 1
+    else:
+        session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES------------------- 
 
-    return render_template("gerenciaPedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0 )
+    return render_template("gerenciaPedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0, config = configuracao )
     # return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
 
 @app.route("/alterarStatusPedido", methods=["POST", "GET"])

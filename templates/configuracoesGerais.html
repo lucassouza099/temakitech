@@ -10,26 +10,41 @@
     <H1> <i class="fas fa-user-cog fa-2x" style="color:orange"></i> Configurações Gerais</H1>
     <br>
 
-    <label for="status"><b>Valor do Frete </b> </label>
-    <input type="text" style="width: 15%;" placeholder="Valor Frete">
-    <br>
-    <p>Horário de funcionamento</p>
-    <div>
-      <label for="time">Abertura</label>
-      <input type="time" placeholder="Valor Frete">
-      <label for="time">Fechamento</label>
-      <input  type="text"  class="without_ampm" placeholder="Valor Frete">
-    </div>
+    <form class="formLogin" method="post" action="javascript:alterarConfiguracao()"> 
+      <b><p class="error" style="color:red"></p></b>
+      <b><p class="success" style="color:green"></p></b>
+      <p> 
+        <label for="">Valor Frete</label>
+        <input id="nome_login" value="{{config.taxaEntrega}}" style="width: 20%;" name="taxaEntrega" required="required" type="text" placeholder="Valor Frete"/>
+      </p>
+       
+      <p> 
+        <label for="email_login"> Horário de funcionamento</label>
+        <input id="email_login" style="width: 10%;" value="{{config.horaInicio}}" name="horaInicio" required="required" type="text" placeholder="00:00" /> 
+        <label for="">até</label>
+        <input id="email_login" style="width: 10%;" value="{{config.horaFim}}" name="horaFim" required="required" type="text" placeholder="24:00" />       
+      </p>
+       
+      <p> 
+        <label for="">Tempo de Entrega</label>
+        <input id="nome_login" value="{{config.tempoEntrega}}" style="width: 30%;" name="tempoEntrega" required="required" type="text" placeholder="Valor Frete"/>
+      </p>
+
+      <p> 
+        <input id="logar" type="submit" value="Alterar configurações" /> 
+      </p>
+  
+    </form>
 
     <br>
-    <label for="status"> Total de pedidos finalizados </label>
+    <!-- <label for="status"> Total de pedidos finalizados </label>
     <input type="text" placeholder="Valor Frete">
 
     <label for="status"> Total de pedidos cancelados </label>
     <input type="text" placeholder="Valor Frete">
 
     <label for="status"> Total de pedidos outros status </label>
-    <input type="text" placeholder="Valor Frete">
+    <input type="text" placeholder="Valor Frete"> -->
 
   </section>
 </div>

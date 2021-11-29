@@ -39,14 +39,14 @@ class PedidoList(Resource):
         registros = PedidoModal.get_pedidos_user(int(id))
         produtos = []
         for row in registros:
-            produtos.append({'id': row[0], 'valorTotal': row[1], 'nome': row[2], 'detalhe': row[3], 'preco': row[4], 'quantidade': row[5], 'endereco': row[6], 'numero': row[7],'estado': row[8], 'estado': row[9], 'complemento': row[10], 'status': row[11],'formaPagamento': row[12],'idStatus': row[13]})
+            produtos.append({'id': row[0], 'valorTotal': row[1], 'nome': row[2], 'detalhe': row[3], 'preco': row[4], 'quantidade': row[5], 'endereco': row[6], 'numero': row[7],'estado': row[8], 'estado': row[9], 'complemento': row[10], 'status': row[11],'formaPagamento': row[12],'idStatus': row[13],'taxaEntrega': row[14]})
         return produtos
     
     def getStatus(self,id):
         registros = PedidoModal.get_pedidos_status(int(id))
         produtos = []
         for row in registros:
-            produtos.append({'id': row[0], 'valorTotal': row[1], 'nome': row[2], 'detalhe': row[3], 'preco': row[4], 'quantidade': row[5], 'endereco': row[6], 'numero': row[7],'estado': row[8], 'estado': row[9], 'complemento': row[10], 'status': row[11], 'formaPagamento': row[12] })
+            produtos.append({'id': row[0], 'valorTotal': row[1], 'nome': row[2], 'detalhe': row[3], 'preco': row[4], 'quantidade': row[5], 'endereco': row[6], 'numero': row[7],'estado': row[8], 'estado': row[9], 'complemento': row[10], 'status': row[11], 'formaPagamento': row[12],'taxaEntrega': row[14] })
         return produtos
 
         

@@ -13,6 +13,8 @@
   <!--===============================================================================================-->
 
   <link rel="stylesheet" href="{{ url_for('static', filename = 'base.css') }}" />
+  <script src="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css" rel="stylesheet" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="/static/jquery-cookie/src/jquery.cookie.js"></script>
   <script type="text/javascript">
@@ -23,32 +25,7 @@
   <script type="text/javascript">
 
     $(document).ready(function () {
-      $(".buttonDetalhesPedido").click(function () {
 
-        idControle = $(this)[0].id
-        strControle = "#" + idControle + ".conteudoDetalhe"
-        strControleExpand = "#" + idControle + ".conteudoDetalhe.expand"
-
-        strBtn = "#" + idControle + ".buttonDetalhesPedido"
-
-        controle = $(strControleExpand)
-        if (controle.length == 1) {
-          descricao = $(strControleExpand)
-          descricao.removeClass('expand')
-          descricao.css('max-height', '0px')
-          descricaobutton = $(strBtn)
-          descricaobutton.text("Ver detalhes do pedido")
-        } else {
-
-          descricao = $(strControle)
-          descricao.addClass('expand')
-          descricao = $(strControleExpand)
-          descricao.css('max-height', 'var(--originalHeight)')
-          descricaobutton = $(strBtn)
-          descricaobutton.text("Ocultar detalhes do pedido")
-
-        }
-      });
 
       $(".btnTrash").click(function () {
         idControle = $(this)[0].id
@@ -61,6 +38,18 @@
           }
         });
 
+      });
+
+      $('.filterStatus').change(function () {
+        $.ajax({
+          url: '/addPedidosContainer',
+          type: 'post',
+          data: { id: $(this).val() },
+          success: function (data) {
+            $('.tableDinamic').html(data);
+            $('.tableDinamic').append(data.htmlresponse);
+          }
+        });
       });
 
 
@@ -91,7 +80,7 @@
               alert(data.message)
               window.location.reload();
             },
-            error: function(data){
+            error: function (data) {
               data = data.responseJSON
               alert(data.message)
             }
@@ -99,6 +88,59 @@
         }
       });
 
+      $(document).on('change', ".changeStatusPedido", function () {
+        if (window.confirm("Você realmente quer alterar os status?")) {
+          $.ajax({
+            url: '/alterarStatusPedido',
+            type: 'post',
+            data: { id: $(this)[0].id, idStatus: $(this).val() },
+            success: function (data) {
+              alert(data.message)
+              window.location.reload();
+            }
+          });
+        }
+      })
+
+      $(document).on('change', ".without_ampm", function () {
+        var time = $(this).val();
+        var hours = Number(time.match(/^(\d+)/)[1]);
+        var minutes = Number(time.match(/:(\d+)/)[1]);
+        var AMPM = time.match(/\s(.*)$/)[1];
+        if (AMPM == "PM" && hours < 12) hours = hours + 12;
+        if (AMPM == "AM" && hours == 12) hours = hours - 12;
+        var sHours = hours.toString();
+        var sMinutes = minutes.toString();
+        if (hours < 10) sHours = "0" + sHours;
+        if (minutes < 10) sMinutes = "0" + sMinutes;
+        alert(sHours + ":" + sMinutes);
+      })
+
+      $(document).on('click', ".buttonDetalhesPedido", function () {
+        idControle = $(this)[0].id
+        strControle = "#" + idControle + ".conteudoDetalhe"
+        strControleExpand = "#" + idControle + ".conteudoDetalhe.expand"
+
+        strBtn = "#" + idControle + ".buttonDetalhesPedido"
+
+        controle = $(strControleExpand)
+        if (controle.length == 1) {
+          descricao = $(strControleExpand)
+          descricao.removeClass('expand')
+          descricao.css('max-height', '0px')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ver detalhes do pedido")
+        } else {
+
+          descricao = $(strControle)
+          descricao.addClass('expand')
+          descricao = $(strControleExpand)
+          descricao.css('max-height', 'var(--originalHeight)')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ocultar detalhes do pedido")
+
+        }
+      });
       $(".btnUpdProduto").click(function () {
         idControle = $(this)[0].id
         $.ajax({
@@ -129,10 +171,67 @@
         });
       });
 
-      
+
 
     });
 
+    $(document).on(function () {
+      $(".buttonDetalhesPedido").click(function () {
+
+        idControle = $(this)[0].id
+        strControle = "#" + idControle + ".conteudoDetalhe"
+        strControleExpand = "#" + idControle + ".conteudoDetalhe.expand"
+
+        strBtn = "#" + idControle + ".buttonDetalhesPedido"
+
+        controle = $(strControleExpand)
+        if (controle.length == 1) {
+          descricao = $(strControleExpand)
+          descricao.removeClass('expand')
+          descricao.css('max-height', '0px')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ver detalhes do pedido")
+        } else {
+
+          descricao = $(strControle)
+          descricao.addClass('expand')
+          descricao = $(strControleExpand)
+          descricao.css('max-height', 'var(--originalHeight)')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ocultar detalhes do pedido")
+
+        }
+      });
+    });
+
+    $(document).delegate(function () {
+      $(".buttonDetalhesPedido").click(function () {
+
+        idControle = $(this)[0].id
+        strControle = "#" + idControle + ".conteudoDetalhe"
+        strControleExpand = "#" + idControle + ".conteudoDetalhe.expand"
+
+        strBtn = "#" + idControle + ".buttonDetalhesPedido"
+
+        controle = $(strControleExpand)
+        if (controle.length == 1) {
+          descricao = $(strControleExpand)
+          descricao.removeClass('expand')
+          descricao.css('max-height', '0px')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ver detalhes do pedido")
+        } else {
+
+          descricao = $(strControle)
+          descricao.addClass('expand')
+          descricao = $(strControleExpand)
+          descricao.css('max-height', 'var(--originalHeight)')
+          descricaobutton = $(strBtn)
+          descricaobutton.text("Ocultar detalhes do pedido")
+
+        }
+      });
+    });
 
     function controlDetail() {
 
@@ -148,7 +247,6 @@
       $(".precoProduto").val(num)
 
     }
-
 
     function closePopLogin() {
       document.querySelector('.bg-modal-login').style.display = "none";
@@ -557,6 +655,17 @@
       });
     }
 
+    var timepicker = new TimePicker('time', {
+      lang: 'en',
+      theme: 'dark'
+    });
+    timepicker.on('change', function (evt) {
+
+      var value = (evt.hour || '00') + ':' + (evt.minute || '00');
+      evt.element.value = value;
+
+    });
+
     function cadUser() {
       $.ajax({
         url: '/cadastroUser',
@@ -618,6 +727,7 @@
 
 
 
+
   </script>
 </head>
 
@@ -633,9 +743,18 @@
           <button class="btnLogin" style="cursor:pointer; position:relative; margin:0px"> Olá,
             {{request.cookies.get("nomeUser", "")}}</button>
           <ul class="list-categories">
-            <li><a href="{{ url_for('perfil') }}"><i class="far fa-user-circle"></i> Perfil</a></li>
+            <li><a href="{{ url_for('perfil') }}"><i class="fas fa-user-cog"></i> Perfil</a></li>
             <hr class="line">
             <li><a href="{{ url_for('pedidos') }}"> <i class="far fa-file-alt"></i> Meus Pedidos</a></li>
+            <hr class="line">
+            <li><a href="{{ url_for('gerenciaPedidos') }}"> <i class="fas fa-eye"></i> </i> Gerencia Pedidos</a></li>
+            <hr class="line">
+            <li><a href="{{ url_for('gerenciaProduto') }}"> <i class="fas fa-tools"></i></i> Config. Produtos</a></li>
+            <hr class="line">
+            <li><a href="{{ url_for('gerenciaCategoria') }}"> <i class="fas fa-tools"></i></i> Config. Categorias</a>
+            </li>
+            <hr class="line">
+            <li><a href="{{ url_for('configuracoesGerais') }}"> <i class="fas fa-cog"></i></i> Config. Gerais</a></li>
             <hr class="line">
             <li><a href="{{ url_for('enderecoPerfil') }}"><i class="fas fa-map-marker-alt"></i> Endereço</a></li>
             <hr class="line">

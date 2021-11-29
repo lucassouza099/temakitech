@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block titulo %}Pedidos{% endblock %}
+{% block js %}
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+  <section class="containerPedidos">
+    <H1> <i class="far fa-file-alt fa-2x" style="color:orange"></i> Gerenciar Pedidos</H1>
+    <br>
+    <h4>Pedidos atuais:</h4>
+
+    <label for="status"> Status </label>
+    <select class="filterStatus" style="width: 30%;" name="" id="" onchange="changeStatus()">
+      <option value="1">Aberto</option>
+      <option value="2">Em preparação</option>
+      <option value="3">Enviado </option>
+      <option value="4">Entregue</option>
+    </select>
+    <div class="tableDinamic">
+
+      {% set count = namespace(value=0) %}
+      {% for pedidos in AllPedidos %}
+
+      {% if pedidos['id'] != count.value %}
+      <div class="pedido">
+        <div class="cabecalhoDetalhes">
+          <div class="produtosPedido">
+            <div class="cabecalhoPedidos">
+              <b>Pedido nº{{pedidos['id']}}</b>
+              <p>TEMAKITECH</p>
+              <p>15/11/2021 20:40</p>
+            </div>
+            <div>
+              <p> <b>Total</b> </p>
+              <p> <b>R$ {{pedidos['valorTotal']}}</b> </p>
+            </div>
+            <select id ="{{pedidos['id']}}" class="changeStatusPedido" style="width: 100%;" name="" id="" onchange="">
+              <option id="{{pedidos['id']}}" value="1">Aberto</option>
+              <option id="{{pedidos['id']}}" value="2">Em preparação</option>
+              <option id="{{pedidos['id']}}" value="3">Enviado </option>
+              <option id="{{pedidos['id']}}" value="4">Entregue</option>
+              <option id="{{pedidos['id']}}" value="5">Cancelado</option>
+            </select>
+          </div>
+
+          <div id="{{pedidos['id']}}" class="conteudoDetalhe">
+            <div class="produtosDetalhes">
+              {% for auxPedido in AllPedidos %}
+              {% if auxPedido['id'] == pedidos['id'] %}
+              <div class="detalhesPedido">
+                <p><b>{{auxPedido['quantidade']}}x {{auxPedido['nome']}}</b></p>
+                <p><b>R$ {{auxPedido['preco']}}</b> </p>
+                <p>Item</p>
+                <p></p>
+              </div>
+              <hr>
+              {% endif %}
+              {% endfor %}
+
+              <div class="detalhesPedido">
+                <p>+ Taxa de entrega</p>
+                <p>R$ 10,00 </p>
+
+                <p><b>Total</b></p>
+                <p> <b>R$ {{pedidos['valorTotal']}}</b> </p>
+              </div>
+            </div>
+            <div class="detalhesEnderecoFpag">
+              <p class="teste"> <b>Dados de Entrega</b> </p>
+              <p class="teste">
+                {{pedidos['endereco']}},{{pedidos['numero']}},{{pedidos['bairro']}},{{pedidos['estado']}},{{pedidos['complemento']}}
+              </p>
+              <br>
+              <p class="teste"> <b>Forma de Pagamento</b> </p>
+              <p class="teste">{{pedidos['formaPagamento']}}</p>
+            </div>
+          </div>
+          <div class="BottomProdutos">
+            <hr>
+            <button id="{{pedidos['id']}}" class="buttonDetalhesPedido" onclick=""> Ver detalhes do pedido </button>
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+      {% set count.value = pedidos['id'] %}
+      {% endfor %}
+    </div>
+</div>
+</div>
+</section>
+</div>
+{% endblock %}

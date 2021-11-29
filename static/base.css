@@ -351,6 +351,18 @@ padding-top: 0px;
 
 }
 
+.without_ampm::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+input[type=time]::-webkit-clear-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  -ms-appearance:none;
+  appearance: none;
+  margin: -10px; 
+}
+
 .cabecalhoDetalhes{
   margin-top: 10px;
   background-color: #eaeaea;
@@ -364,7 +376,7 @@ padding-top: 0px;
 
 .produtosPedido{
   display: grid;
-  grid-template-columns: 50% 32% 16%;
+  grid-template-columns: 50% 30% 18%;
 }
 
 .detalhesPedido{
@@ -526,6 +538,9 @@ tr:nth-child(even) {
   position: inherit;
 }
 
+.changeStatusPedido{
+  margin:0 auto;
+}
 
 
 .descCart{

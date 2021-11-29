@@ -1,20 +1,9 @@
-{% extends "base.html" %}
-{% block titulo %}Pedidos{% endblock %}
-{% block js %}
-{% endblock %}
 
-{% block conteudo %}
-
-<div class="container">
-  <section class="containerPedidos">
-    <H1> <i class="far fa-file-alt fa-2x" style="color:orange"></i> Meus pedidos</H1>
-    <br>
-    <h4>Acompanhe o seu pedido atual e veja o histórico de seus pedidos aqui :</h4>
     {% set count = namespace(value=0) %}
+
+    {% if AllPedidos %}
     {% for pedidos in AllPedidos %}
-    
     {% if pedidos['id'] != count.value %}
-    <div class="pedido">
       <div class="cabecalhoDetalhes">
         <div class="produtosPedido">
           <div class="cabecalhoPedidos">
@@ -26,19 +15,15 @@
             <p> <b>Total</b> </p>
             <p> <b>R$ {{pedidos['valorTotal']}}</b> </p>
           </div>
-
-          {% if pedidos['idStatus'] == 1 %}
-          <button class="buttonStatus" style="background-color: orange;" onclick=""> <b> {{pedidos['status']}}</b> </button>
-          {% elif pedidos['idStatus'] == 2  %}
-          <button class="buttonStatus" style="background-color: rgb(52, 115, 151);" onclick=""> <b> {{pedidos['status']}}</b> </button>
-          {% elif pedidos['idStatus'] == 3  %}
-          <button class="buttonStatus" style="background-color: rgb(82, 86, 139);" onclick=""> <b> {{pedidos['status']}}</b> </button>
-          {% elif pedidos['idStatus'] == 4  %}
-          <button class="buttonStatus" style="background-color: green;"  onclick=""> <b> {{pedidos['status']}}</b> </button>
-          {% else %}
-          <button class="buttonStatus" style="background-color: red;" onclick=""> <b> {{pedidos['status']}}</b> </button>
-          {% endif %}
-           </div>
+          <select id ="{{pedidos['id']}}" class="changeStatusPedido" style="width: 100%;" name="" id="" onchange="">
+            <option id="{{pedidos['id']}}" value="0"></option>
+            <option id="{{pedidos['id']}}" value="1">Aberto</option>
+            <option id="{{pedidos['id']}}" value="2">Em preparação</option>
+            <option id="{{pedidos['id']}}" value="3">Enviado </option>
+            <option id="{{pedidos['id']}}" value="4">Entregue</option>
+            <option id="{{pedidos['id']}}" value="5">Cancelado</option>
+          </select>
+        </div>
 
         <div id="{{pedidos['id']}}" class="conteudoDetalhe">
           <div class="produtosDetalhes">
@@ -61,30 +46,28 @@
               <p><b>Total</b></p>
               <p> <b>R$ {{pedidos['valorTotal']}}</b> </p>
             </div>
+            
           </div>
           <div class="detalhesEnderecoFpag">
-            
             <p class="teste"> <b>Dados de Entrega</b> </p>
             <p class="teste">{{pedidos['endereco']}},{{pedidos['numero']}},{{pedidos['bairro']}},{{pedidos['estado']}},{{pedidos['complemento']}}</p>
-            <br>
+            <br>      
             <p class="teste"> <b>Forma de Pagamento</b> </p>
-            <p class="teste">{{pedidos['formaPagamento']}}</p>
-
-            
+            <p class="teste">{{pedidos['formaPagamento']}}</p>    
           </div>
         </div>
         <div class="BottomProdutos">
           <hr>
-          <button id="{{pedidos['id']}}" class="buttonDetalhesPedido" onclick=""> Ver detalhes do pedido </button>
+          <button id="{{pedidos['id']}}" class="buttonDetalhesPedido" onclick="showHideDetail()"> Ver detalhes do pedido </button>
         </div>
       </div>
-    </div>
     
     {% endif %}
     {% set count.value = pedidos['id'] %}
     {% endfor %}
-</div>
-</div>
-</section>
-</div>
-{% endblock %}
+
+    {% else %}
+
+    <h1 style="margin-top: 10px;">Não existe produto com este status</h1>
+
+    {% endif %}

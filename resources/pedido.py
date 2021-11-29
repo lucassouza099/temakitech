@@ -29,11 +29,28 @@ class Pedido():
 
 class PedidoList(Resource):
     def get(self,id):
-        registros = PedidoModal.get_pedidos_user(int(id))
+        registros = PedidoModal.get_pedidos(int(id))
         produtos = []
         for row in registros:
             produtos.append({'id': row[0], 'idUsuario': row[1], 'idEndereco': row[2], 'idStatus': row[3], 'idFpagamento': row[4], 'valor_total': row[5] })
         return produtos
+
+    def getUser(self,id):
+        registros = PedidoModal.get_pedidos_user(int(id))
+        produtos = []
+        for row in registros:
+            produtos.append({'id': row[0], 'valorTotal': row[1], 'nome': row[2], 'detalhe': row[3], 'preco': row[4], 'quantidade': row[5], 'endereco': row[6], 'numero': row[7],'estado': row[8], 'estado': row[9], 'complemento': row[10], 'status': row[11],'formaPagamento': row[12],'idStatus': row[13]})
+        return produtos
+    
+    def getStatus(self,id):
+        registros = PedidoModal.get_pedidos_status(int(id))
+        produtos = []
+        for row in registros:
+            produtos.append({'id': row[0], 'valorTotal': row[1], 'nome': row[2], 'detalhe': row[3], 'preco': row[4], 'quantidade': row[5], 'endereco': row[6], 'numero': row[7],'estado': row[8], 'estado': row[9], 'complemento': row[10], 'status': row[11], 'formaPagamento': row[12] })
+        return produtos
+
+        
+    
 
 # class ProdutoMaintenance(Resource):
 #     #Atualização do produto

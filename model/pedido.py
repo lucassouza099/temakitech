@@ -36,7 +36,7 @@ class PedidoModal():
         return count
     
     @classmethod
-    def get_pedidos_user(self,id):
+    def get_pedidos(self,id):
         connectorDatabase = database()
         connect = connectorDatabase.abrirConexao()
         cur = connect.cursor()
@@ -44,58 +44,29 @@ class PedidoModal():
         registros = cur.fetchall()
         return registros
 
-        
-
-    # #Ao criar verificar se o categoria já existe
-    # @classmethod
-    # def get_produto(self, nome):
-    #     connectorDatabase = database()
-    #     connect = connectorDatabase.abrirConexao()
-    #     cur = connect.cursor()
-    #     cur.execute("SELECT id FROM produto WHERE nome=%s",(nome,))
-    #     registro = cur.fetchone()
-    #     if (registro): 
-    #         categoria = self
-    #         categoria.nome = registro[0]
-    #         return categoria
-    #     categoria = False
-
-    # @classmethod
-    # def get_produto_all(self):
-    #     connectorDatabase = database()
-    #     connect = connectorDatabase.abrirConexao()
-    #     cur = connect.cursor()
-    #     cur.execute("SELECT * FROM produto")
-    #     registros = cur.fetchall()
-    #     return registros
-        
-    # @classmethod
-    # def delete_by_id(self, id):
-    #     connectorDatabase = database()
-    #     connect = connectorDatabase.abrirConexao()
-    #     cur = connect.cursor()
-    #     cur.execute("DELETE FROM produto WHERE id =%s",(int(id),))
-    #     connect.commit()
-    #     cur.close()
-
-
-
-    # @classmethod
-    # def update_produto(self,idCategoria, nome, detalhe, preco, id):
-    #     connectorDatabase = database()
-    #     connect = connectorDatabase.abrirConexao()
-    #     cur = connect.cursor()
-    #     cur.execute("UPDATE produto SET id_categoria =%s, nome =%s, detalhe= %s, preco = %s where id= %s",(int(idCategoria),nome,detalhe,preco, id))
-    #     connect.commit()
-    #     cur.close()
-        
-
-    # @classmethod
-    # def find_by_id(self, id):
-    #     id = int(id)
-    #     connectorDatabase = database()
-    #     connect = connectorDatabase.abrirConexao()
-    #     cur = connect.cursor()
-    #     cur.execute("SELECT id FROM produto WHERE id='%s'",(id,))
-    #     produto = cur.fetchone()
-    #     return produto
+    @classmethod
+    def get_pedidos_user(self,id):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT pedido.id,pedido.valor_total,aux_produto.nome,aux_produto.detalhe,aux_produto.preco,aux_produto.quantidade,aux_endereco.endereco,aux_endereco.numero,aux_endereco.bairro,aux_endereco.estado,aux_endereco.complemento, status_pedido.status, forma_pagamento.forma_pagamento, status_pedido.id FROM pedido, aux_produto, aux_endereco, status_pedido, forma_pagamento WHERE pedido.id_usuario = %s AND	pedido.id = aux_produto.id_pedido AND  pedido.id_aux_endereco = aux_endereco.id AND pedido.id_status = status_pedido.id AND pedido.id_forma_pagamento = forma_pagamento.id " ,( int(id),))
+        registros = cur.fetchall()
+        return registros
+    
+    @classmethod
+    def get_pedidos_status(self,status):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("SELECT pedido.id,pedido.valor_total,aux_produto.nome,aux_produto.detalhe,aux_produto.preco,aux_produto.quantidade,aux_endereco.endereco,aux_endereco.numero,aux_endereco.bairro,aux_endereco.estado,aux_endereco.complemento, status_pedido.status, forma_pagamento.forma_pagamento, status_pedido.id FROM pedido, aux_produto, aux_endereco, status_pedido, forma_pagamento WHERE pedido.id_status = %s AND	pedido.id = aux_produto.id_pedido AND  pedido.id_aux_endereco = aux_endereco.id AND pedido.id_status = status_pedido.id AND pedido.id_forma_pagamento = forma_pagamento.id " ,( int(status),))
+        registros = cur.fetchall()
+        return registros
+    
+    @classmethod
+    def update_produto(self,id, idStatus):
+        connectorDatabase = database()
+        connect = connectorDatabase.abrirConexao()
+        cur = connect.cursor()
+        cur.execute("UPDATE pedido SET id_status =%s where id= %s",(int(idStatus), int(id)))
+        connect.commit()
+        cur.close()

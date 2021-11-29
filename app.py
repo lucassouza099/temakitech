@@ -1,4 +1,5 @@
 from flask import Flask, flash, session, url_for, make_response, request, render_template, redirect, send_from_directory, jsonify
+from flask.wrappers import Request
 from flask_restful import Api
 from flask_jwt import JWT
 from flask_mysqldb import MySQL
@@ -135,6 +136,10 @@ def gerenciaProduto():
     listaProdutos = produto.get()
     listaCategorias = categoria.get()
     return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias)
+
+@app.route("/configuracoesGerais", methods=["POST", "GET"])
+def configuracoesGerais():
+    return render_template("configuracoesGerais.html")    
 
 @app.route("/gerenciaCategoria", methods=["POST", "GET"])
 def gerenciaCategoria():
@@ -583,39 +588,56 @@ def finalizarPedido():
 @app.route("/pedidos", methods=["POST", "GET"])
 def pedidos():
     regPedido = PedidoList()
-    endereco = []
-    status = []
-    fpagamentos = []
-    aux_produto= []
-
     try:
         carrinho = session['cart']
     except Exception as error:
         carrinho = []
     
-    pedidos = regPedido.get(request.cookies.get("id", ""))
-    for pedido in pedidos:
-        #Endereço Atual
-        enderecoAux = AuxEndereco()
-        enderecoAtual = enderecoAux.get( int(pedido['id']))
-        endereco.append(enderecoAtual)
-        getStatus = Status()
-        #STATUS
-        descStatus = getStatus.get( int(pedido['idStatus'])) 
-        status.append(descStatus)
-        #Forma de pagamento
-        # clFormaPagamento = Fpagamentos()
-        # fpagamentos.append(clFormaPagamento.get(pedido['idFpagamento']))
-        #Produtos aux
-        clAuxProd = ProdutoListPed()
-        retAuxPrdo = clAuxProd.get(pedido['id'])
-        for prod in retAuxPrdo:
-            aux_produto.append(prod)
-    listaPagamentos = FpagamentosList.get()
-
+    pedidos = regPedido.getUser(request.cookies.get("id", ""))
     newlist = sorted(pedidos, key=lambda d: d['id'], reverse=True) 
 
-    return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
+    return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0 )
+    # return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
+
+@app.route("/gerenciaPedidos", methods=["POST", "GET"])
+def gerenciaPedidos():
+    regPedido = PedidoList()
+    status = Status()
+    try:
+        carrinho = session['cart']
+    except Exception as error:
+        carrinho = []
+    
+    try:
+        if request.form['id']:
+            pedidos = regPedido.getStatus(request.cookies.get("id", "request.form['id']"))
+    except Exception as error:
+        pedidos = regPedido.getStatus(1)
+    
+    
+    newlist = sorted(pedidos, key=lambda d: d['id'], reverse=True) 
+
+    return render_template("gerenciaPedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0 )
+    # return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
+
+@app.route("/alterarStatusPedido", methods=["POST", "GET"])
+def alterarStatusPedido():
+
+    PedidoModal.update_produto(request.form['id'],request.form['idStatus'])
+    return {"message":"Pedido alterado com sucesso!"},200
+    
+
+@app.route("/addPedidosContainer", methods=["POST", "GET"])
+def addPedidosContainer():
+    regPedido = PedidoList()
+    try:
+        if request.form['id']:
+            pedidos = regPedido.getStatus(request.form['id'])
+    except Exception as error:
+        pedidos = regPedido.getStatus(1)
+    
+    newlist = sorted(pedidos, key=lambda d: d['id'], reverse=True) 
+    return jsonify({'htmlresponse': render_template('tabelaPedidos.html', AllPedidos = newlist)})
 
 def allowed_file(filename):    
     return '.' in filename and filename.split('.', 1)

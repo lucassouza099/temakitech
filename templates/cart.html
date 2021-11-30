@@ -7,6 +7,9 @@ function minusProduto(action){
 
 $(document).ready(function(){
 
+  $("#total").text(parseFloat($("#total").text()).toFixed(2))
+  $("#total").css('font-weight', 'bold');
+  
   $(".btnRemove").click(function(){
     $.ajax({
       url: '/calcProduto',
@@ -94,7 +97,7 @@ $(document).ready(function(){
       <!-- Valor total do item -->
       <div class="totalsCart">
         <p class="minDescPreco"> <B>R$</B> </p>
-        <p id="{{produto['id']}}" class="minDescPreco"><b>{{produto['precoTotal']}}</b></p>
+        <p id="{{produto['id']}}" id="total" class="minDescPreco"><b>{{produto['precoTotal']}}</b></p>
       </div>
     </div>
     <hr class="line">

@@ -21,7 +21,7 @@ class UserModel():
         connectorDatabase = database()
         connect = connectorDatabase.abrirConexao()
         cur = connect.cursor()
-        cur.execute("INSERT INTO usuario(email,senha,nome,ddd,telefone) VALUES (%s,%s,%s,%s,%s)", (self.username, self.password, self.nome, self.ddd, self.telefone))
+        cur.execute("INSERT INTO usuario(email,senha,nome,ddd,telefone,tipo) VALUES (%s,%s,%s,%s,%s,%s)", (self.username, self.password, self.nome, self.ddd, self.telefone,"cliente"))
         connect.commit()
         cur.close()
 
@@ -31,7 +31,7 @@ class UserModel():
         connectorDatabase = database()
         connect = connectorDatabase.abrirConexao()
         cur = connect.cursor()
-        cur.execute("SELECT id, email, senha, nome, ddd, telefone FROM usuario WHERE email=%s",(email,))
+        cur.execute("SELECT id, email, senha, nome, ddd, telefone, tipo FROM usuario WHERE email=%s",(email,))
         username = cur.fetchone()
         if (username): 
             user = self
@@ -41,6 +41,7 @@ class UserModel():
             user.nome = username[3]
             user.ddd = username[4]
             user.telefone = username[5]
+            user.tipo = username[6]
             return user
         username = False
 

@@ -151,6 +151,7 @@ def logar():
         res.set_cookie("id", str(logado.id), samesite="Strict")
         res.set_cookie("login", login, samesite="Strict")
         res.set_cookie("senha", senha, samesite="Strict")
+        res.set_cookie("tipo", logado.tipo, samesite="Strict")
         return res
     else:
         return {'message': 'Email ou senha inválidos'}, 400
@@ -415,6 +416,8 @@ def cadastroUser():
     user = UserModel(False, request.form['email'], request.form['senha'], request.form['nome'], int(request.form['ddd']),
                      int(request.form['telefone']))
     
+    
+
     user.save_to_db()
     res = make_response(redirect("/"))
     user = UserModel.find_by_username(request.form['email'])
@@ -422,12 +425,14 @@ def cadastroUser():
     res.set_cookie("id", str(user.id), samesite="Strict")
     res.set_cookie("login", request.form['email'], samesite="Strict")
     res.set_cookie("senha", request.form['senha'], samesite="Strict")
+    res.set_cookie("tipo", user.tipo, samesite="Strict")
     return res      
 
 @app.route("/updateUser", methods=["POST"])
 def updateUser():
     user = UserModel(request.cookies.get("id", ""),None, None, request.form['nome'],int(request.form['ddd']),int(request.form['telefone']))
     user.update_by_id(request.cookies.get("id", ""),request.form['nome'],int(request.form['ddd']),int(request.form['telefone']))
+    
     return{"message":"Sucesso para alterar"}
 
 @app.route("/updateUserPass", methods=["POST"])

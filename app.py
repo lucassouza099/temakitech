@@ -650,7 +650,7 @@ def addCart():
     cart_list.append({"id": request.form['id'], "nome": request.form['nome'],
                      "qtd": request.form['qtd'], "preco": request.form['preco'], "precoTotal": request.form['precoTotal']  , "obs": request.form['obs']})
     session['cart'] = cart_list  #
-    redirect('/')
+    return {"message":"Sucesso"},200
 
 
 @app.route("/calcProduto", methods=["POST", "GET"])

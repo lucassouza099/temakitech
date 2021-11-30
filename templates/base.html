@@ -422,8 +422,9 @@
             $('.containerCarrinho').append(data.htmlresponse);
           }
         },
-        error: function () {
-          alert("Você não possui items no carrinho")
+        error: function (data) {
+          data = data.responseJSON
+          alert(data.message)
         }
       });
     }

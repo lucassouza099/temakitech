@@ -4,10 +4,16 @@ from mysql.connector import errorcode
 class database():
   def __init__(self):
      self.config = {
-      'user': 'b4e0f46015fe75',
-      'password': '5edba6ba',
-      'host': 'us-cdbr-east-04.cleardb.com',
-      'database': 'heroku_ea3a5eaf6af7dd4',
+
+      'user': 'w6orm2w7c0f9io2p',
+      'password': 'ndl4r94n3vhz73p6',
+      'host': 'yjo6uubt3u5c16az.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+      'database': 'afx2fov6gpzbgr2g',
+
+      # 'user': 'b4e0f46015fe75',
+      # 'password': '5edba6ba',
+      # 'host': 'us-cdbr-east-04.cleardb.com',
+      # 'database': 'heroku_ea3a5eaf6af7dd4',
 
 
       # 'user': 'root',

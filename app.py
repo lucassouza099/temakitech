@@ -35,7 +35,6 @@ import boto3
 import os
 import werkzeug
 import json
-import simplejson
 import datetime
 
 

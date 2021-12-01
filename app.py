@@ -896,6 +896,8 @@ def upload_file(file_name, bucket):
     return response
 
 if __name__ == '__main__':
-#     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    app.run( host="0.0.0.0", port=5000, debug=False)
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.run( host="127.0.0.1", port=5000, debug=False)
+    # app.listen(process.env.PORT || 3000, function(){
+    # console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);});
 

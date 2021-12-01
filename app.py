@@ -21,6 +21,7 @@ from model.categoria import CategoriaModel
 from resources.pedido import PedidoList
 from resources.formaPagamento import FpagamentosList
 from resources.formaPagamento import Fpagamentos
+from flask_cors import CORS
 # from flask_cors import CORS, cross_origin
 from contextlib import closing
 from model.user import UserModel
@@ -154,7 +155,7 @@ def logar():
         res.set_cookie("login", login, samesite="Strict")
         res.set_cookie("senha", senha, samesite="Strict")
         res.set_cookie("tipo", logado.tipo, samesite="Strict")
-        return res
+        return {'message': 'Sucesso'}, 200
     else:
         return {'message': 'Email ou senha inválidos'}, 400
 

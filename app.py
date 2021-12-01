@@ -37,7 +37,7 @@ import werkzeug
 import json
 import simplejson
 import datetime
-import boto3
+
 
 app = Flask(__name__)
 cors = CORS(app)

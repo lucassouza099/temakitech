@@ -63,7 +63,7 @@ api.add_resource(ProdutoMaintenance, '/produto/maintenance/<string:id>')
 api.add_resource(Status, '/pedido/status')
 # api.add_resource(Status, '/pedido')
 
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+# APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 # APP_ROOT = 'https://temakitechit.herokuapp.com/'
 
 # UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static\img')
@@ -73,8 +73,6 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 def time_in_range(start, end, current):
     """Returns whether current is in the range [start, end]"""
     return start <= current <= end
-
-
 
 
 @app.route("/")
@@ -871,12 +869,6 @@ def addPedidosContainer():
 def allowed_file(filename):    
     return '.' in filename and filename.split('.', 1)
 
-if __name__ == '__main__':
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    app.run( host="0.0.0.0", port=5000, debug=True)
-    # http_erver = WSGIServer(('177.198.93.24', 5000), app)
-    # http_server.serve_forever()
-
 def show_image(bucket):
     s3_client = boto3.client("s3",
     aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
@@ -902,3 +894,10 @@ def upload_file(file_name, bucket):
     # aws_secret_access_key= "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")
     response = s3.upload_file(file_name, bucket, object_name)
     return response
+
+if __name__ == '__main__':
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.run( host="0.0.0.0", port=5000, debug=True)
+    # http_erver = WSGIServer(('177.198.93.24', 5000), app)
+    # http_server.serve_forever()
+

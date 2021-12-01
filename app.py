@@ -21,7 +21,7 @@ from model.categoria import CategoriaModel
 from resources.pedido import PedidoList
 from resources.formaPagamento import FpagamentosList
 from resources.formaPagamento import Fpagamentos
-from flask_cors import CORS, cross_origin
+# from flask_cors import CORS, cross_origin
 from contextlib import closing
 from model.user import UserModel
 from model.endereco import enderecoModel
@@ -40,8 +40,8 @@ import datetime
 
 
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+# cors = CORS(app)
+# app.config['CORS_HEADERS'] = 'Content-Type'
 
 FLASK_ENV="production"
 # Criando conexões com o banco de dados

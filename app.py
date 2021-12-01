@@ -124,8 +124,14 @@ def deletarProduto():
 
     if produtoMaintenance.delete(id):
         try:
-            os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(getProduto.img)))
-            return {"message":"Sucesso para deletar"}
+            s3 = boto3.client("s3",
+            aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+            aws_secret_access_key= "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")
+            filename = 'uploads/'+getProduto.img
+            if s3.delete_object(Bucket=BUCKET, Key= filename):
+                return {"message":"Sucesso para deletar"}
+            else:
+                return{"message":"Erro para deletar"},400
         except Exception as error:
             if produtoMaintenance.delete(id):
                 return {"message":"Sucesso para deletar"}
@@ -325,10 +331,18 @@ def alterarProduto():
         
         #remove o antigo e salva o novo
         try:
+            s3 = boto3.client("s3",
+            aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+            aws_secret_access_key= "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")
+            filename = 'uploads/'+request.form['img']
+            s3.delete_object(Bucket=BUCKET, Key= filename)
             os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(request.form['img'])))
+            f = request.files['file']
             f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+            upload_file(f"uploads/{f.filename}", BUCKET)
         except Exception as error:
             f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+            upload_file(f"uploads/{f.filename}", BUCKET)
     else:
         f.filename = request.form['img']
  

@@ -8,6 +8,7 @@ class database():
       'password': '5edba6ba',
       'host': 'us-cdbr-east-04.cleardb.com',
       'database': 'heroku_ea3a5eaf6af7dd4',
+      
 
       # 'user': 'root',
       # 'password': 'techit@2021',

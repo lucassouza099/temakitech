@@ -154,7 +154,7 @@ def logar():
         res.set_cookie("login", login, samesite="Strict")
         res.set_cookie("senha", senha, samesite="Strict")
         res.set_cookie("tipo", logado.tipo, samesite="Strict")
-        return {'message': 'Sucesso'}, 200
+        return res
     else:
         return {'message': 'Email ou senha inválidos'}, 400
 

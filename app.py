@@ -21,7 +21,6 @@ from model.categoria import CategoriaModel
 from resources.pedido import PedidoList
 from resources.formaPagamento import FpagamentosList
 from resources.formaPagamento import Fpagamentos
-from flask_cors import CORS
 # from flask_cors import CORS, cross_origin
 from contextlib import closing
 from model.user import UserModel

@@ -866,34 +866,34 @@ def addPedidosContainer():
     newlist = sorted(pedidos, key=lambda d: d['id'], reverse=True) 
     return jsonify({'htmlresponse': render_template('tabelaPedidos.html', AllPedidos = newlist)})
 
-def allowed_file(filename):    
-    return '.' in filename and filename.split('.', 1)
+# def allowed_file(filename):    
+#     return '.' in filename and filename.split('.', 1)
 
-def show_image(bucket):
-    s3_client = boto3.client("s3",
-    aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
-    aws_secret_access_key= "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")
-    public_urls = []
-    try:
-        for item in s3_client.list_objects(Bucket=bucket)['Contents']:
-            presigned_url = s3_client.generate_presigned_url('get_object', Params = {'Bucket': bucket, 'Key': item['Key']}, ExpiresIn = 200000)
-            public_urls.append(presigned_url)
-    except Exception as e:
-        pass
-    # print("[INFO] : The contents inside show_image = ", public_urls)
-    return public_urls
+# def show_image(bucket):
+#     s3_client = boto3.client("s3",
+#     aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+#     aws_secret_access_key= "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")
+#     public_urls = []
+#     try:
+#         for item in s3_client.list_objects(Bucket=bucket)['Contents']:
+#             presigned_url = s3_client.generate_presigned_url('get_object', Params = {'Bucket': bucket, 'Key': item['Key']}, ExpiresIn = 200000)
+#             public_urls.append(presigned_url)
+#     except Exception as e:
+#         pass
+#     # print("[INFO] : The contents inside show_image = ", public_urls)
+#     return public_urls
 
-def upload_file(file_name, bucket):
-    object_name = file_name
-    # s3_client = boto3.client('s3')
-    s3 = boto3.client("s3",
-    aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
-    aws_secret_access_key= "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")
-    # s3_client = boto3.resource('s3',
-    # aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
-    # aws_secret_access_key= "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")
-    response = s3.upload_file(file_name, bucket, object_name)
-    return response
+# def upload_file(file_name, bucket):
+#     object_name = file_name
+#     # s3_client = boto3.client('s3')
+#     s3 = boto3.client("s3",
+#     aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+#     aws_secret_access_key= "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")
+#     # s3_client = boto3.resource('s3',
+#     # aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+#     # aws_secret_access_key= "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")
+#     response = s3.upload_file(file_name, bucket, object_name)
+#     return response
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

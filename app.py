@@ -896,8 +896,6 @@ def upload_file(file_name, bucket):
     return response
 
 if __name__ == '__main__':
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+#     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.run( host="0.0.0.0", port=5000, debug=True)
-    # http_erver = WSGIServer(('177.198.93.24', 5000), app)
-    # http_server.serve_forever()
 

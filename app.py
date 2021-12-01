@@ -31,11 +31,13 @@ from model.auxEndereco import AuxenderecoModal
 from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
 from pytz import timezone
+import boto3
 import os
 import werkzeug
 import json
 import simplejson
 import datetime
+import boto3
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -45,6 +47,9 @@ FLASK_ENV="production"
 # Criando conexões com o banco de dados
 app.secret_key = 'techit'
 api = Api(app)
+
+BUCKET = 'flask-temakitech-files'
+UPLOAD_FOLDER = "uploads"
 
 jwt = JWT(app, authenticate, identity)  # Criação do endpoint  /auth
 # Chamando as Apis através dos endpoints
@@ -61,7 +66,7 @@ api.add_resource(Status, '/pedido/status')
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 # APP_ROOT = 'https://temakitechit.herokuapp.com/'
 
-UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static\img')
+# UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static\img')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 #Regras
@@ -162,7 +167,7 @@ def gerenciaProduto():
     categoria = CategoriaList()
     listaProdutos = produto.get()
     listaCategorias = categoria.get()
-
+    contents = show_image(BUCKET)
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
     south_africa = timezone('Brazil/East')
@@ -179,7 +184,7 @@ def gerenciaProduto():
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES------------------- 
 
-    return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias, config=configuracao)
+    return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias, config=configuracao, images3 = contents)
 
 @app.route("/configuracoesGerais", methods=["POST", "GET"])
 def configuracoesGerais():
@@ -361,16 +366,22 @@ def cadastroProduto():
         #Função para verificar se o usuário já existe no ban    co de dados
     if ProdutoModel.find_by_name(request.form['produto']):
             #caso não existir retorno a mensagem abaixo
-        return {"message":"Essa categoria já existe no sistema!"}, 400
+        return {"message":"Essa produto já existe no sistema!"}, 400
         #chamando a classe para gravar o usuário no banco de dados
     categoria = ProdutoModel(request.form['categoria'],request.form['produto'],request.form['detalhe'], request.form['preco'],f.filename)
     categoria.save_to_db()
 
     if f and allowed_file(f.filename):
-        f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+        # f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+        if request.method == "POST":
+            f = request.files['file']
+            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+            upload_file(f"uploads/{f.filename}", BUCKET)
+        # return redirect("/")
         
 
     return {"message":"Sucesso ao cadastrar o produto!"},201
+
 
     
 @app.route("/cadastroCategoria", methods=["GET", "POST"])
@@ -865,3 +876,29 @@ if __name__ == '__main__':
     app.run( host="0.0.0.0", port=5000, debug=True)
     # http_erver = WSGIServer(('177.198.93.24', 5000), app)
     # http_server.serve_forever()
+
+def show_image(bucket):
+    s3_client = boto3.client("s3",
+    aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+    aws_secret_access_key= "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")
+    public_urls = []
+    try:
+        for item in s3_client.list_objects(Bucket=bucket)['Contents']:
+            presigned_url = s3_client.generate_presigned_url('get_object', Params = {'Bucket': bucket, 'Key': item['Key']}, ExpiresIn = 200000)
+            public_urls.append(presigned_url)
+    except Exception as e:
+        pass
+    # print("[INFO] : The contents inside show_image = ", public_urls)
+    return public_urls
+
+def upload_file(file_name, bucket):
+    object_name = file_name
+    # s3_client = boto3.client('s3')
+    s3 = boto3.client("s3",
+    aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+    aws_secret_access_key= "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")
+    # s3_client = boto3.resource('s3',
+    # aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
+    # aws_secret_access_key= "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")
+    response = s3.upload_file(file_name, bucket, object_name)
+    return response

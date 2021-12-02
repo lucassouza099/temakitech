@@ -2,7 +2,6 @@ from flask import Flask, config, flash, session, url_for, make_response, request
 from flask.wrappers import Request
 from flask_restful import Api
 from flask_jwt import JWT
-from flask_mysqldb import MySQL
 from security import authenticate, identity
 from resources.user import UserRegister
 from resources.categoria import CategoriaList, CategoriaMaintenance

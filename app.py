@@ -80,6 +80,7 @@ def raiz():
     categoria = CategoriaList()
     listaProdutos = produto.get()
     listaCategorias = categoria.get()
+    contents = show_image(BUCKET)
     
     try:
         carrinho = session['cart']
@@ -111,7 +112,7 @@ def raiz():
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES-------------------    
 
-    return render_template("index.html", produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal, config = configuracao)
+    return render_template("index.html", images3 = contents, produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal, config = configuracao)
 
 
 @app.route("/deletarProduto", methods=["POST", "GET"])
@@ -443,7 +444,9 @@ def cadastroUser():
     user.save_to_db()
     res = make_response(redirect("/"))
     user = UserModel.find_by_username(request.form['email'])
-    res.set_cookie("nomeUser", request.form['nome'], samesite="Strict")
+    nome = user.nome
+    nome= nome.split(' ')
+    res.set_cookie("nomeUser", nome[0], samesite="Strict")
     res.set_cookie("id", str(user.id), samesite="Strict")
     res.set_cookie("login", request.form['email'], samesite="Strict")
     res.set_cookie("senha", request.form['senha'], samesite="Strict")

@@ -117,7 +117,12 @@ function addCart(){
 
     <div class="item">
       <div class="img-main">
-        <img src="../static/img/{{produto['img']}}" alt="Temaki Salmão CreamChease">
+        {% for item in images3%}
+        {% if produto['img'] in item%}
+        <!-- <img src="../static/img/{{produto['img']}}" alt="Temaki Salmão CreamChease"> -->
+        <img src="{{ item }}" alt="Temaki Salmão CreamChease">
+        {% endif %}
+        {% endfor %}
       </div>
       <h3 class="title-produto">{{produto['nome']}}</h4>
         <h5 class="desc-produto">{{produto['detalhe']}}</h5>

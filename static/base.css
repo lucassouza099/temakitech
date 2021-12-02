@@ -784,7 +784,6 @@ footer {
   color: #333;
 }
 
-
 .list-categories{
   list-style-type: none;
   width: 220px;
@@ -1148,4 +1147,8 @@ input[type=submit]{
 
 footer h5{
   text-align: center;
+}
+
+.imgColumn{
+  width: 50px;
 }

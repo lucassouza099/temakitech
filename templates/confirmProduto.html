@@ -6,7 +6,12 @@
 
 <div class="confirmProduto">
     <div class="confirmPhoto">
-        <img  src="../static/img/{{produto['img']}}" alt="Temaki Salmão CreamChease">
+        {% for item in images3%}
+        {% if produto['img'] in item%}
+        <img src="{{ item }}" alt=""> 
+        {% endif %}
+        {% endfor %}
+        <!-- <img  src="../static/img/{{produto['img']}}" alt="Temaki Salmão CreamChease"> -->
     </div>
     <div class="confirmQTD">
         <h3 id="{{produto.id}}" class="idProduto">{{produto.nome}}</h3>
@@ -15,7 +20,7 @@
             <p class="qtdProduto">1</p>
             <a class="btnAdd" onclick="aumentarQtd()"><i class="fas fa-plus-circle"></i></a>
         </div>
-         <p><b>R$</b></p>  <p id="{{produto['preco']}}" class="idPreco"> <b>{{produto['preco']}}</b></p>
+         <p><b>R$</b></p> <p id="{{produto['preco']}}" class="idPreco"> <b>{{produto['preco']}}</b></p>
     </div>
 </div>
 

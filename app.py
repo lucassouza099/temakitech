@@ -1,3 +1,4 @@
+from re import S
 from flask import Flask, config, flash, session, url_for, make_response, request, render_template, redirect, send_from_directory, jsonify
 from flask.wrappers import Request
 from flask_restful import Api
@@ -282,6 +283,7 @@ def login():
 @app.route("/addTelaProduto", methods=["POST", "GET"])
 def addTelaProduto():
     categoria = CategoriaList()
+    contents = show_image(BUCKET)
     listaCategorias = categoria.get()
     return jsonify({'htmlresponse': render_template('cadastroProduto.html', categorias = listaCategorias)})
 
@@ -618,9 +620,10 @@ def enderecoPerfil():
 def confirmProduto():
     if request.method == 'POST':
         produto = Produto()
+        contents = show_image(BUCKET)
         onlyProduto = produto.get(request.form['userid'])
         employeelist = []
-    return jsonify({'htmlresponse': render_template('confirmProduto.html', produto=onlyProduto)})
+    return jsonify({'htmlresponse': render_template('confirmProduto.html', produto=onlyProduto, images3 = contents)})
 
 
 @app.route("/cart", methods=["POST", "GET"])

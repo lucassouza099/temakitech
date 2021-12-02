@@ -29,13 +29,14 @@ from model.pedido import PedidoModal
 from model.auxPedido import AuxprodModal
 from model.auxEndereco import AuxenderecoModal
 from werkzeug.utils import secure_filename
-from gevent.pywsgi import WSGIServer
+# from gevent.pywsgi import WSGIServer
 from pytz import timezone
 import boto3
 import os
 import werkzeug
 import json
 import datetime
+import urllib.parse
 
 
 app = Flask(__name__)
@@ -340,15 +341,17 @@ def alterarProduto():
             s3.delete_object(Bucket=BUCKET, Key= filename)
             os.remove(os.path.join(UPLOAD_FOLDER,secure_filename(request.form['img'])))
             f = request.files['file']
-            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-            upload_file(f"uploads/{f.filename}", BUCKET)
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(filename)))
+            upload_file(f"uploads/{filename}", BUCKET)
         except Exception as error:
-            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-            upload_file(f"uploads/{f.filename}", BUCKET)
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(filename)))
+            upload_file(f"uploads/{filename}", BUCKET)
     else:
         f.filename = request.form['img']
  
-    ProdutoModel.update_produto(request.form['categoria'],request.form['produto'],request.form['detalhe'],request.form['preco'],int(request.form['id']), f.filename)
+    ProdutoModel.update_produto(request.form['categoria'],request.form['produto'],request.form['detalhe'],request.form['preco'],int(request.form['id']), filename)
 
     return {"Message":"Produto alterado com sucesso!"},200
 # Rotina de criação de usuário
@@ -381,15 +384,17 @@ def cadastroProduto():
             #caso não existir retorno a mensagem abaixo
         return {"message":"Essa produto já existe no sistema!"}, 400
         #chamando a classe para gravar o usuário no banco de dados
-    categoria = ProdutoModel(request.form['categoria'],request.form['produto'],request.form['detalhe'], request.form['preco'],f.filename)
+    filename = secure_filename(f.filename)
+    categoria = ProdutoModel(request.form['categoria'],request.form['produto'],request.form['detalhe'], request.form['preco'],filename)
     categoria.save_to_db()
 
-    if f and allowed_file(f.filename):
         # f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-        if request.method == "POST":
-            f = request.files['file']
-            f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-            upload_file(f"uploads/{f.filename}", BUCKET)
+    if request.method == "POST":
+        request.files['file'].filename = secure_filename(request.files['file'].filename)
+        f = request.files['file']
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+        upload_file(f"uploads/{f.filename}", BUCKET)
         # return redirect("/")
         
 

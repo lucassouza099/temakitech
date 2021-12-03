@@ -822,19 +822,19 @@
       <div class="icon-status">
         <i class="fas fa-circle fa-lg"></i>
       </div>
-      
+
       <div class="status-desc">
         <p class="status-p">Fechado</p>
-        <p>Veja os horários</p>
+        <p>Horário das {{horario}}</p>
       </div>
       {% else %}
       <div class="icon-status" style="color: green;">
         <i class="fas fa-circle fa-lg"></i>
       </div>
-      
+
       <div class="status-desc">
         <p class="status-p">Aberto</p>
-        <p>Veja os horários</p>
+        <p>Horário das {{horario}}</p>
       </div>
       {% endif %}
     </div>
@@ -855,7 +855,23 @@
       </div>
 
       <div class="desc-pgto">
-        <p>Forma de pagamento</p>
+        <ul id="listFormPagamento">
+          <li id="visible">
+            <p style="position: inherit;">Forma de pagamento</p>
+            <ul class="list-forma">
+              <li><a href=""><i class="far fa-money-bill-alt"></i> Dinheiro</a></li>
+              <hr class="line">
+              <li><a href=""><i class="far fa-credit-card"></i> Cartão de créditos</a></li>
+              <hr class="line">
+              <li><a><i class="far fa-credit-card"></i> Cartão de débito</a></li>
+              <hr class="line">
+              <li><a href=""><i class="far fa-money-bill-alt"></i> PIX</a></li>
+              <hr class="line">
+              <li><a href=""><i class="fab fa-whatsapp"></i> WhatsApp Pay</a></li>
+              <hr class="line">
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
 

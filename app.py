@@ -99,6 +99,7 @@ def raiz():
 
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -113,7 +114,7 @@ def raiz():
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES-------------------    
 
-    return render_template("index.html", images3 = contents, produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal, config = configuracao)
+    return render_template("index.html", horario = horario, images3 = contents, produtos=listaProdutos, categorias=listaCategorias, carrinho=ValorTotal, config = configuracao)
 
 
 @app.route("/deletarProduto", methods=["POST", "GET"])
@@ -175,6 +176,7 @@ def gerenciaProduto():
     contents = show_image(BUCKET)
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -189,7 +191,7 @@ def gerenciaProduto():
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES------------------- 
 
-    return render_template("produto.html",produtos = listaProdutos,categorias = listaCategorias, config=configuracao, images3 = contents)
+    return render_template("produto.html", horario = horario, produtos = listaProdutos,categorias = listaCategorias, config=configuracao, images3 = contents)
 
 @app.route("/configuracoesGerais", methods=["POST", "GET"])
 def configuracoesGerais():
@@ -199,6 +201,7 @@ def configuracoesGerais():
         carrinho = []
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + "ás" + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -212,7 +215,7 @@ def configuracoesGerais():
     else:
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES-------------------   
-    return render_template("configuracoesGerais.html", carrinho = carrinho, config = configuracao)    
+    return render_template("configuracoesGerais.html", horario = horario, carrinho = carrinho, config = configuracao)    
 
 @app.route("/gerenciaCategoria", methods=["POST", "GET"])
 def gerenciaCategoria():
@@ -220,6 +223,7 @@ def gerenciaCategoria():
     listaCategorias = categoria.get()
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -233,7 +237,7 @@ def gerenciaCategoria():
     else:
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES------------------- 
-    return render_template("categoria.html",categorias = listaCategorias, config = configuracao )
+    return render_template("categoria.html",horario = horario, categorias = listaCategorias, config = configuracao )
 
 @app.route("/contato", methods=["POST", "GET"])
 def contato():
@@ -245,6 +249,7 @@ def contato():
          carrinho = []
       #------------------CONFIGURAÇÕES-------------------
      configuracao = configModal.get_config()
+     horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
      south_africa = timezone('Brazil/East')
      horaInicio = int(configuracao.horaInicio[0:2])
      minutoInicio = int(configuracao.horaInicio[3:5])
@@ -258,7 +263,7 @@ def contato():
      else:
          session['atividade'] = 0
      #----------------FIM-CONFIGURAÇÕES------------------- 
-     return render_template("contato.html", config = configuracao )
+     return render_template("contato.html", horario = horario, config = configuracao )
 
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
@@ -445,8 +450,6 @@ def cadastroUser():
     user = UserModel(False, request.form['email'], request.form['senha'], request.form['nome'], int(request.form['ddd']),
                      int(request.form['telefone']))
     
-    
-
     user.save_to_db()
     res = make_response(redirect("/"))
     user = UserModel.find_by_username(request.form['email'])
@@ -565,6 +568,7 @@ def perfil():
         user = UserModel.find_by_username(request.cookies.get("login", ""))
         #------------------CONFIGURAÇÕES-------------------
         configuracao = configModal.get_config()
+        horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
         south_africa = timezone('Brazil/East')
         horaInicio = int(configuracao.horaInicio[0:2])
         minutoInicio = int(configuracao.horaInicio[3:5])
@@ -581,15 +585,31 @@ def perfil():
         # enderecos = EnderecoList()
         # # listaEndereco = endereco.get_enderecos_user(request.cookies.get("login", ""))
         # listaEndereco = enderecos.get(int(request.cookies.get("id", "")))
-        return render_template("perfil.html",carrinho=carrinho, usuario = user, config = configuracao)    
+        return render_template("perfil.html", horario = horario, carrinho=carrinho, usuario = user, config = configuracao)    
 
 @app.route("/endereco",  methods=["POST","GET"])
 def endereco():
     if request.cookies.get("id", ""):
         enderecos = EnderecoList()
+        #------------------CONFIGURAÇÕES-------------------
+        configuracao = configModal.get_config()
+        horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
+        south_africa = timezone('Brazil/East')
+        horaInicio = int(configuracao.horaInicio[0:2])
+        minutoInicio = int(configuracao.horaInicio[3:5])
+        horaFim = int(configuracao.horaFim[0:2])
+        minutoFim = int(configuracao.horaFim[3:5])
+        start = datetime.time(horaInicio, minutoInicio, 0)
+        end = datetime.time(horaFim, minutoFim, 0)
+        current = datetime.datetime.now(south_africa).time()
+        if(time_in_range(start, end, current)):
+            session['atividade'] = 1
+        else:
+            session['atividade'] = 0
+    #----------------FIM-CONFIGURAÇÕES-------------------   
         # listaEndereco = endereco.get_enderecos_user(request.cookies.get("login", ""))
         listaEndereco = enderecos.get(int(request.cookies.get("id", "")))
-        return render_template("endereco.html", enderecos = listaEndereco)
+        return render_template("endereco.html", horario = horario, enderecos = listaEndereco)
 
 @app.route("/enderecoPerfil",  methods=["POST","GET"])
 def enderecoPerfil():
@@ -604,6 +624,7 @@ def enderecoPerfil():
 
         #------------------CONFIGURAÇÕES-------------------
         configuracao = configModal.get_config()
+        horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
         south_africa = timezone('Brazil/East')
         horaInicio = int(configuracao.horaInicio[0:2])
         minutoInicio = int(configuracao.horaInicio[3:5])
@@ -618,7 +639,7 @@ def enderecoPerfil():
             session['atividade'] = 0
         #----------------FIM-CONFIGURAÇÕES-------------------   
 
-        return render_template("enderecoPerfil.html",carrinho=carrinho, enderecos = listaEndereco, config = configuracao)
+        return render_template("enderecoPerfil.html", horario = horario, carrinho=carrinho, enderecos = listaEndereco, config = configuracao)
 
 
 @app.route("/confirmProduto", methods=["POST", "GET"])
@@ -635,6 +656,7 @@ def confirmProduto():
 def cart():
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -660,10 +682,10 @@ def cart():
         
         ValorTotal += float(configuracao.taxaEntrega)
         session['valorTotal'] = float(ValorTotal) 
-        return render_template("cart.html", carrinho=produtos, qtdCarrinho=qtdTotal, total= float(ValorTotal), config = configuracao)
+        return render_template("cart.html", horario = horario, carrinho=produtos, qtdCarrinho=qtdTotal, total= float(ValorTotal), config = configuracao)
 
     except Exception as error:
-        return render_template("cart.html", carrinho='', qtdCarrinho=0, total=0,config = configuracao)
+        return render_template("cart.html",horario = horario, carrinho='', qtdCarrinho=0, total=0,config = configuracao)
     # teste = simplejson.loads(str(name))
     # return render_template("cart.html")
 
@@ -795,6 +817,7 @@ def pedidos():
 
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -809,7 +832,7 @@ def pedidos():
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES------------------- 
 
-    return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0, config = configuracao )
+    return render_template("pedidos.html", horario = horario, carrinho = carrinho, AllPedidos = newlist, data = 0, config = configuracao )
     # return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
 
 @app.route("/alterarConfiguracoes", methods=["POST", "GET"])
@@ -817,6 +840,7 @@ def alterarConfiguracoes():
     if configModal.update_config(request.form['horaInicio'],request.form['horaFim'],request.form['taxaEntrega'],request.form['tempoEntrega']):
         #------------------CONFIGURAÇÕES-------------------
         configuracao = configModal.get_config()
+        horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
         south_africa = timezone('Brazil/East')
         horaInicio = int(request.form['horaInicio'][0:2])
         minutoInicio = int(request.form['horaInicio'][3:5])
@@ -853,6 +877,7 @@ def gerenciaPedidos():
     
     #------------------CONFIGURAÇÕES-------------------
     configuracao = configModal.get_config()
+    horario = funcionamento = configuracao.horaInicio + " ás " + configuracao.horaFim
     south_africa = timezone('Brazil/East')
     horaInicio = int(configuracao.horaInicio[0:2])
     minutoInicio = int(configuracao.horaInicio[3:5])
@@ -867,7 +892,7 @@ def gerenciaPedidos():
         session['atividade'] = 0
     #----------------FIM-CONFIGURAÇÕES------------------- 
 
-    return render_template("gerenciaPedidos.html", carrinho = carrinho, AllPedidos = newlist, data = 0, config = configuracao )
+    return render_template("gerenciaPedidos.html", horario = horario, carrinho = carrinho, AllPedidos = newlist, data = 0, config = configuracao )
     # return render_template("pedidos.html", carrinho = carrinho, AllPedidos = newlist, enderecos = endereco, Allstatus = status, formaPagamentos = listaPagamentos, aux_produto=aux_produto )
 
 @app.route("/alterarStatusPedido", methods=["POST", "GET"])
@@ -903,18 +928,13 @@ def show_image(bucket):
             public_urls.append(presigned_url)
     except Exception as e:
         pass
-    # print("[INFO] : The contents inside show_image = ", public_urls)
     return public_urls
 
 def upload_file(file_name, bucket):
     object_name = file_name
-    # s3_client = boto3.client('s3')
     s3 = boto3.client("s3",
     aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
     aws_secret_access_key= "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")
-    # s3_client = boto3.resource('s3',
-    # aws_access_key_id="AKIAWVUHNOKQIITZEGPH",
-    # aws_secret_access_key= "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")
     response = s3.upload_file(file_name, bucket, object_name)
     return response
 

@@ -11,6 +11,10 @@ class database():
       'database': 'afx2fov6gpzbgr2g',
 
 
+
+
+
+
       # 'user': 'root',
       # 'password': 'techit@2021',
       # 'host': '127.0.0.1',

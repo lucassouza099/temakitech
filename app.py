@@ -327,6 +327,7 @@ def addTelaEnderecoPerfil():
 @app.route("/alterarProduto", methods=["POST", "GET"])
 def alterarProduto():
     f = request.files['file']
+    
     if f.filename != '':
         if 'file' not in request.files:
             return {"message":"No file part"},400
@@ -354,7 +355,7 @@ def alterarProduto():
             f.save(os.path.join(UPLOAD_FOLDER, secure_filename(filename)))
             upload_file(f"uploads/{filename}", BUCKET)
     else:
-        f.filename = request.form['img']
+        filename = request.form['img']
  
     ProdutoModel.update_produto(request.form['categoria'],request.form['produto'],request.form['detalhe'],request.form['preco'],int(request.form['id']), filename)
 
